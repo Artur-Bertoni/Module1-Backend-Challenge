@@ -14,7 +14,6 @@ public class Main {
     public static void main(String[] args) {
         ImageIcon icon = new ImageIcon("images/checkmark.png");
 
-        //teste 1
         Locale.setDefault(Locale.US);
 
         APP:
