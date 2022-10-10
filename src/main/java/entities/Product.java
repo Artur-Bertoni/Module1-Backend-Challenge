@@ -1,15 +1,18 @@
 package entities;
 
-import java.io.Serializable;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public class Product implements Serializable {
-
+public class Product {
     //Atributos
-    private String name, category;
-    private Float price;
+    private String name, category, code, series, description, color, material;
+    private BigDecimal price;
     private Integer quantity;
+    private Long barCode;
+    private Date manufacturingDate, expirationDate;
 
     public static List<Product> productList = new ArrayList<>();
 
@@ -18,7 +21,6 @@ public class Product implements Serializable {
     }
 
     //Getters / Setters
-
     public String getName() {
         return name;
     }
@@ -35,11 +37,51 @@ public class Product implements Serializable {
         this.category = category;
     }
 
-    public Float getPrice() {
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getSeries() {
+        return series;
+    }
+
+    public void setSeries(String series) {
+        this.series = series;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(String material) {
+        this.material = material;
+    }
+
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Float price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -51,78 +93,39 @@ public class Product implements Serializable {
         this.quantity = quantity;
     }
 
+    public Long getBarCode() {
+        return barCode;
+    }
+
+    public void setBarCode(Long barCode) {
+        this.barCode = barCode;
+    }
+
+    public Date getManufacturingDate() {
+        return manufacturingDate;
+    }
+
+    public void setManufacturingDate(Date manufacturingDate) {
+        this.manufacturingDate = manufacturingDate;
+    }
+
+    public Date getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(Date expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
     //Métodos
-    public boolean addProduct(String name, Float price, String quantity, String category){
-        try{
-            Product p = new Product();
-
-            p.setName(name);
-            p.setPrice(price);
-            p.setCategory(category);
-            p.setQuantity(Integer.parseInt(quantity));
-
-            productList.add(p);
-
-            return true;
-        }
-        catch(Exception e){
-            return false;
-        }
-    }
-
-    public boolean editProduct(String name, Float price, String quantity, String category, int nro){
-        try{
-            if (name != null) productList.get(nro).setName(name);
-            if (price != null) productList.get(nro).setPrice(price);
-            if (quantity != null) productList.get(nro).setQuantity(Integer.parseInt(quantity));
-            if (category != null) productList.get(nro).setCategory(category);
-            return true;
-        }
-        catch(Exception e){
-            return false;
-        }
-    }
-
-    public Boolean removeProduct(int nro){
-        try{
-            productList.remove(nro);
-
-            return true;
-        }
-        catch(Exception e){
-            return false;
-        }
-    }
-
-    public boolean addQuantity(int nro, int quantity){
-        try{
-            productList.get(nro).setQuantity(productList.get(nro).quantity+quantity);
-            return true;
-        }
-        catch(Exception e){
-            return false;
-        }
-    }
-
-    public boolean removeQuantity(int nro, int quantity){
-        try{
-            if (productList.get(nro).getQuantity()-quantity < 0){
-                return false;
-            }
-
-            productList.get(nro).setQuantity(productList.get(nro).quantity-quantity);
-            return true;
-        }
-        catch(Exception e){
-            return false;
-        }
-    }
-
     public String toString(int i) {
-        return  "| Nome: " + productList.get(i).getName() +
-                " | Preço: $ " + String.format("%.2f",productList.get(i).getPrice()) +
-                " | Quantidade em Estoque: " + productList.get(i).getQuantity() +
-                " | Categoria: " + productList.get(i).getCategory() +
-                " |";
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+        String expirationDate = getExpirationDate() == null ? "n/a" : sdf.format(productList.get(i).getExpirationDate());
+
+        return  productList.get(i).getCode() + ", " + productList.get(i).getBarCode() + ", " + productList.get(i).getSeries() + ", " + productList.get(i).getName() + ", '" +
+                productList.get(i).getDescription() + "', " + productList.get(i).getCategory() + ", '" + String.format("%.2f",productList.get(i).getPrice()) + "', " +
+                sdf.format(productList.get(i).getManufacturingDate()) + ", " + expirationDate + ", " + productList.get(i).getColor() + ", " + productList.get(i).getMaterial() + ", " +
+                productList.get(i).getQuantity();
     }
 }
