@@ -4,27 +4,44 @@ import com.opencsv.CSVReader;
 import entities.Product;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import javax.swing.*;
 import java.io.FileReader;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.lang.Math;
-//TODO criar e implementar exceptions
+
 public class ProductService extends Product {
-    public boolean addProduct(String name, BigDecimal price, String quantity, String category){
+    //TODO criar e implementar exceptions
+    public void addProduct(String name, BigDecimal price, String quantity, String category){
         try{
-            if (Integer.parseInt(quantity) >= 0){
+            if (Integer.parseInt(quantity) >= 0) {
                 Product p = new Product();
 
                 p.setName(name);
                 p.setPrice(price);
                 p.setCategory(category);
                 p.setQuantity(Integer.parseInt(quantity));
-                p.setCode(RandomStringUtils.randomAlphanumeric(8).toLowerCase());
 
-                p.setBarCode(Math.abs(new Random().nextLong()));
+                String code;
+                long barCode;
+
+                boolean exit;
+                do {
+                    exit = true;
+                    code = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
+                    barCode = Math.abs(Long.parseLong(RandomStringUtils.randomNumeric(12)));
+
+                    for (Product p2 : productList) {
+                        if (code.equals(p2.getCode()) || barCode == p2.getBarCode()) {
+                            exit = false;
+                            break;
+                        }
+                    }
+                } while (!exit);
+
+                p.setCode(code);
+                p.setBarCode(barCode);
                 p.setSeries("n/a");
                 p.setDescription("n/a");
                 p.setManufacturingDate(new Date());
@@ -33,17 +50,14 @@ public class ProductService extends Product {
                 p.setMaterial("n/a");
 
                 productList.add(p);
-
-                return true;
             }
-            return false;
         }
         catch(Exception e){
-            return false;
+            throw new ProductServiceException(e.getMessage());
         }
     }
 
-    public boolean addProductByImport(String path){
+    public void addProductByImport(String path){
         try{
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             CSVReader csvReader = new CSVReader(new FileReader(path));
@@ -87,7 +101,7 @@ public class ProductService extends Product {
                         expirationDate = sdf.parse(cols.get("data de validade"));
                     }
                 } catch (ParseException e) {
-                    JOptionPane.showMessageDialog(null,"Erro ("+e.getMessage()+") ao importar o produto '"+name+"'","Importar Produto", JOptionPane.ERROR_MESSAGE);
+                    throw new ProductServiceException("Erro ("+e.getMessage()+") ao importar o produto '"+name+"'");
                 }
 
                 String color = cols.get("cor");
@@ -113,86 +127,63 @@ public class ProductService extends Product {
                     cont[0]++;
                 }
                 catch (Exception e){
-                    throw e;
+                    throw new ProductServiceException(e.getMessage());
                 }
             });
-
-            return true;
         }
         catch(Exception e){
-            return false;
+            throw new ProductServiceException(e.getMessage());
         }
     }
     //TODO ajustar edições de protudo
-    public boolean editProduct(String name, BigDecimal price, String quantity, String category, String code){
+    public void editProduct(Long barCode, String series, String name, String description, String category, BigDecimal price, Date manufacturingDate, Date expirationDate, String color, String material, String quantity, int position){
         try{
-            int i = verifyExistingProduct(code);
-
-            if (i != -1){
-                if (name != null) productList.get(i).setName(name);
-                if (price != null) productList.get(i).setPrice(price);
-                if (quantity != null) productList.get(i).setQuantity(Integer.parseInt(quantity));
-                if (category != null) productList.get(i).setCategory(category);
-                return true;
-            }
-            else{
-                return false;
-            }
+            if (barCode != null) productList.get(position).setBarCode(barCode);
+            if (series != null) productList.get(position).setSeries(series);
+            if (name != null) productList.get(position).setName(name);
+            if (description != null) productList.get(position).setDescription(description);
+            if (category != null) productList.get(position).setCategory(category);
+            if (price != null) productList.get(position).setPrice(price);
+            if (manufacturingDate != null) productList.get(position).setManufacturingDate(manufacturingDate);
+            if (expirationDate != null) productList.get(position).setExpirationDate(expirationDate);
+            if (color != null) productList.get(position).setColor(color);
+            if (material != null) productList.get(position).setMaterial(material);
+            if (quantity != null) productList.get(position).setQuantity(Integer.parseInt(quantity));
         }
         catch(Exception e){
-            return false;
+            throw new ProductServiceException(e.getMessage());
         }
     }
 
-    public Boolean removeProduct(String code){
+    public boolean removeProduct(int position){
         try{
-            for (int i=0; i<productList.size(); i++){
-                if (productList.get(i).getCode().equals(code)){
-                    productList.remove(i);
-                    return true;
-                }
-            }
-            return false;
+            productList.remove(position);
+            return true;
         }
         catch(Exception e){
-            return false;
+            throw new ProductServiceException(e.getMessage());
         }
     }
 
-    public boolean addQuantity(String code, int quantity){
+    public void addQuantity(int position, int quantity){
         try{
-            int i = verifyExistingProduct(code);
-            if (i != -1){
-                productList.get(i).setQuantity(productList.get(i).getQuantity()+quantity);
-                return true;
-            }
-            else{
-                return false;
-            }
+            productList.get(position).setQuantity(productList.get(position).getQuantity()+quantity);
         }
         catch(Exception e){
-            return false;
+            throw new ProductServiceException(e.getMessage());
         }
     }
 
-    public boolean removeQuantity(String code, int quantity){
+    public void removeQuantity(int position, int quantity){
         try{
-            int i = verifyExistingProduct(code);
-
-            if (i != -1){
-                if (productList.get(i).getQuantity()-quantity < 0){
-                    return false;
-                }
-
-                productList.get(i).setQuantity(productList.get(i).getQuantity() -quantity);
-                return true;
+            if (productList.get(position).getQuantity()-quantity < 0){
+                throw new ProductServiceException("A quantia inserida para a remoção é maior do que a quantia em estoque");
             }
-            else{
-                return false;
-            }
+
+            productList.get(position).setQuantity(productList.get(position).getQuantity() - quantity);
         }
         catch(Exception e){
-            return false;
+            throw new ProductServiceException(e.getMessage());
         }
     }
 

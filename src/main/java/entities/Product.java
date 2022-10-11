@@ -101,16 +101,18 @@ public class Product {
         this.barCode = barCode;
     }
 
-    public Date getManufacturingDate() {
-        return manufacturingDate;
+    public String getManufacturingDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        return sdf.format(manufacturingDate);
     }
 
     public void setManufacturingDate(Date manufacturingDate) {
         this.manufacturingDate = manufacturingDate;
     }
 
-    public Date getExpirationDate() {
-        return expirationDate;
+    public String getExpirationDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        return sdf.format(expirationDate);
     }
 
     public void setExpirationDate(Date expirationDate) {

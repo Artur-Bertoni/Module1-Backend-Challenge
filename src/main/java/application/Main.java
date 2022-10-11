@@ -4,12 +4,10 @@ import entities.Product;
 import service.ProductService;
 import Utilities.Utils;
 
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvValidationException;
+import service.ProductServiceException;
 
 import javax.swing.*;
-import java.io.FileReader;
-import java.io.IOException;
+import javax.swing.text.MaskFormatter;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,27 +39,27 @@ public class Main {
                     Object[] addProduct = {"Dados do produto:\n\nNome:", nameTXT, "Preço:", priceTXT,  "Quantidade em Estoque:", quantityTXT, "Categoria:", categoryTXT};
 
                     do{
-                        option = JOptionPane.showConfirmDialog(null, addProduct, "Cadastro de produto", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                        try{
+                            option = JOptionPane.showConfirmDialog(null, addProduct, "Cadastro de produto", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-                        priceTXT.setText(priceTXT.getText().replace(',','.'));
+                            priceTXT.setText(priceTXT.getText().replace(',','.'));
 
-                        if (option == JOptionPane.OK_OPTION){
-                            if (Integer.parseInt(quantityTXT.getText()) >= 0){
-                                boolean result = ps.addProduct(nameTXT.getText(), new BigDecimal(priceTXT.getText()), quantityTXT.getText(), categoryTXT.getText());
+                            if (option == JOptionPane.OK_OPTION){
+                                if (Integer.parseInt(quantityTXT.getText()) >= 0){
+                                    ps.addProduct(nameTXT.getText(), new BigDecimal(priceTXT.getText()), quantityTXT.getText(), categoryTXT.getText());
 
-                                if (result){
                                     JOptionPane.showMessageDialog(null,"Produto cadastrado com sucesso!","Cadastro de produto", JOptionPane.INFORMATION_MESSAGE,icon);
                                     break;
+                                } else{
+                                    throw new InputMismatchException("O valor referente à quantidade não pode ser negativo");
                                 }
-                                else{
-                                    JOptionPane.showMessageDialog(null,"Erro ao cadastrar o produto","Cadastro de produto", JOptionPane.ERROR_MESSAGE);
-                                }
+                            } else{
+                                break;
                             }
-                            else{
-                                JOptionPane.showMessageDialog(null,"Erro ao cadastrar o produto\n\nO valor referente à quantidade deve ser positivo","Cadastro de produto", JOptionPane.ERROR_MESSAGE);
-                            }
+                        } catch (ProductServiceException | InputMismatchException e){
+                            JOptionPane.showMessageDialog(null,"Erro: "+e.getMessage(),"Cadastro de produto", JOptionPane.ERROR_MESSAGE);
                         }
-                    }while(true);
+                    } while(true);
                 }
                 case 1 -> { //Edit product
                     //TODO alterar arquivo .csv com alterações in-app
@@ -75,210 +73,188 @@ public class Main {
                             switch (option){
                                 case 0 -> { //Editar Dados Cadastrais do Produto
                                     do {
-                                        String code = JOptionPane.showInputDialog(null, "Insira o código correspondente ao produto à ser editado:\n\n"+
-                                                "Código, Código de barras, Série, Nome, Descrição, Categoria, Preço, Data de fabricação, Data de validade, Cor, Material, Quantidade em estoque\n"+
-                                                u.listProductBuilder(), "Editar Dados Cadastrais do Produto", JOptionPane.QUESTION_MESSAGE);
-                                        //TODO ajustar verifyExistingProducts
-                                        int i = ps.verifyExistingProduct(code);
-                                        if (code != null && i != -1){
-                                            JTextField nameTXT     = new JTextField();    nameTXT.setText(Product.productList.get(i).getName());
-                                            JTextField priceTXT    = new JTextField();    priceTXT.setText(String.format("%.2f",Product.productList.get(i).getPrice()));
-                                            JTextField quantityTXT = new JTextField();    quantityTXT.setText(String.valueOf(Product.productList.get(i).getQuantity()));
-                                            JTextField categoryTXT = new JTextField();    categoryTXT.setText(Product.productList.get(i).getCategory());
+                                        try{
+                                            String code = JOptionPane.showInputDialog(null, "Insira o código correspondente ao produto à ser editado:\n\n"+
+                                                    "Código, Código de barras, Série, Nome, Descrição, Categoria, Preço, Data de fabricação, Data de validade, Cor, Material, Quantidade em estoque\n"+
+                                                    u.listProductBuilder(), "Editar Dados Cadastrais do Produto", JOptionPane.QUESTION_MESSAGE);
 
-                                            Object[] editProduct = {"Dados do produto "+p.getCode()+":\n\nNome:", nameTXT, "Preço:", priceTXT,  "Quantidade em Estoque:", quantityTXT, "Categoria:", categoryTXT};
+                                            int position = ps.verifyExistingProduct(code);
 
-                                            do{
-                                                option = JOptionPane.showConfirmDialog(null, editProduct, "Editar Dados Cadastrais do Produto", JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
+                                            if (position != -1){
+                                                MaskFormatter dateMask = new MaskFormatter("##/##/####");
 
-                                                if (option == JOptionPane.OK_OPTION){
-                                                    option = JOptionPane.showConfirmDialog(null, "Código do produto: "+p.getCode()+"\n\nNome: "+nameTXT.getText()+"\nPreço: "+String.format("%.2f",Float.parseFloat(priceTXT.getText()))+
-                                                             "\nQuantidade em Estoque: "+quantityTXT.getText()+"\nCategoria: "+categoryTXT.getText()+"\n\nConfirma edição?", "Editar Dados Cadastrais do Produto",
-                                                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                                                JTextField barCodeTXT                    = new JTextField();                    barCodeTXT.setText(Product.productList.get(position).getBarCode().toString());
+                                                JTextField seriesTXT                     = new JTextField();                    seriesTXT.setText(Product.productList.get(position).getSeries());
+                                                JTextField nameTXT                       = new JTextField();                    nameTXT.setText(Product.productList.get(position).getName());
+                                                JTextField descriptionTXT                = new JTextField();                    descriptionTXT.setText(Product.productList.get(position).getDescription());
+                                                JTextField categoryTXT                   = new JTextField();                    categoryTXT.setText(Product.productList.get(position).getCategory());
+                                                JTextField priceTXT                      = new JTextField();                    priceTXT.setText(String.format("%.2f",Product.productList.get(position).getPrice()));
+                                                JFormattedTextField manufacturingDateTXT = new JFormattedTextField(dateMask);   manufacturingDateTXT.setText(Product.productList.get(position).getManufacturingDate());
+                                                JFormattedTextField expirationDateTXT    = new JFormattedTextField(dateMask);   expirationDateTXT.setText(Product.productList.get(position).getExpirationDate());
+                                                JTextField colorTXT                      = new JTextField();                    colorTXT.setText(Product.productList.get(position).getColor());
+                                                JTextField materialTXT                   = new JTextField();                    materialTXT.setText(Product.productList.get(position).getMaterial());
+                                                JTextField quantityTXT                   = new JTextField();                    quantityTXT.setText(String.valueOf(Product.productList.get(position).getQuantity()));
 
-                                                    if (option == JOptionPane.YES_OPTION){
-                                                        boolean result = ps.editProduct(nameTXT.getText(), new BigDecimal(priceTXT.getText()), quantityTXT.getText(), categoryTXT.getText(), code);
+                                                Object[] editProduct = {"Dados do produto "+p.getCode()+":\n\nCódigo de barras:", barCodeTXT, "Série:", seriesTXT, "Nome:", nameTXT, "Descrição:", descriptionTXT,
+                                                                        "Categoria:", categoryTXT, "Preço:", priceTXT, "Data de fabricação:", manufacturingDateTXT, "Data de validade:", expirationDateTXT, "Quantidade:", quantityTXT};
 
-                                                        if (result){
+                                                do{
+                                                    try{
+                                                        option = JOptionPane.showConfirmDialog(null, editProduct, "Editar Dados Cadastrais do Produto", JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
+
+                                                        if (option == JOptionPane.OK_OPTION){
+                                                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+                                                            ps.editProduct(Long.parseLong(barCodeTXT.getText()), seriesTXT.getText(), nameTXT.getText(), descriptionTXT.getText(), categoryTXT.getText(), new BigDecimal(priceTXT.getText()), sdf.parse(manufacturingDateTXT.getText()), sdf.parse(expirationDateTXT.getText()), colorTXT.getText(), materialTXT.getText(), quantityTXT.getText(), position);
+
                                                             JOptionPane.showMessageDialog(null,"Edição efetuada com sucesso!","Editar Dados Cadastrais do Produto", JOptionPane.INFORMATION_MESSAGE,icon);
                                                             break EDIT_PRODUCT;
+                                                        } else{
+                                                            break;
                                                         }
-                                                        else{
-                                                            JOptionPane.showMessageDialog(null,"Erro ao editar o produto","Editar Dados Cadastrais do Produto", JOptionPane.ERROR_MESSAGE);
-                                                        }
-                                                        break;
+                                                    } catch (ProductServiceException e){
+                                                        JOptionPane.showMessageDialog(null,"Erro: "+e.getMessage(),"Editar Dados Cadastrais do Produto", JOptionPane.ERROR_MESSAGE);
                                                     }
-                                                }
-                                                else{
-                                                    break;
-                                                }
-                                            }while(true);
-                                        }
-                                        else{
-                                            Object[] erroEdicao = {"Inserir novo código", "Cancelar Edição"};
-
-                                            option = JOptionPane.showOptionDialog(null, "O código inserido não corresponde a nenhum produto", "Editar Dados Cadastrais do Produto", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, erroEdicao, erroEdicao[0]);
-
-                                            if (option == 1){
-                                                break EDIT_PRODUCT;
+                                                } while(true);
+                                            } else{
+                                                throw new ProductServiceException("O código inserido não corresponde a nenhum produto");
                                             }
+                                        } catch (ProductServiceException | ParseException e){
+                                            JOptionPane.showMessageDialog(null,"Erro: "+e.getMessage(),"Editar Dados Cadastrais do Produto", JOptionPane.ERROR_MESSAGE);
                                         }
-                                    }while(true);
+                                    } while(true);
                                 }
                                 case 1 -> { //Adicionar ao Estoque
-                                    ADD_QUANTITY:
-                                    do{
-                                        String code = JOptionPane.showInputDialog(null, "Insira o código correspondente ao produto cuja quantidade de estoque deseja aumentar:\n\n"+
-                                                "Código, Código de barras, Série, Nome, Descrição, Categoria, Preço, Data de fabricação, Data de validade, Cor, Material, Quantidade em estoque\n"+
-                                                u.listProductBuilder(), "Adicionar ao Estoque", JOptionPane.QUESTION_MESSAGE);
+                                    do {
+                                        try {
+                                            String code = JOptionPane.showInputDialog(null, "Insira o código correspondente ao produto cuja quantidade de estoque deseja aumentar:\n\n" +
+                                                    "Código, Código de barras, Série, Nome, Descrição, Categoria, Preço, Data de fabricação, Data de validade, Cor, Material, Quantidade em estoque\n" +
+                                                    u.listProductBuilder(), "Adicionar ao Estoque", JOptionPane.QUESTION_MESSAGE);
 
-                                        int i = ps.verifyExistingProduct(code);
+                                            int position = ps.verifyExistingProduct(code);
 
-                                        if (code != null && i != -1){
-                                            String quantity = JOptionPane.showInputDialog(null, "Insira a quantidade a ser adicionada ao estoque:\n\n", "Adicionar ao Estoque", JOptionPane.QUESTION_MESSAGE);
+                                            if (position != -1) {
+                                                String quantity = JOptionPane.showInputDialog(null, "Insira a quantidade a ser adicionada ao estoque:", "Adicionar ao Estoque", JOptionPane.QUESTION_MESSAGE);
 
-                                            if (quantity != null){
-                                                if (Integer.parseInt(quantity) > 0){
-                                                    if (ps.addQuantity(code, Integer.parseInt(quantity))){
-                                                        JOptionPane.showMessageDialog(null,"Edição efetuada com sucesso!","Adicionar ao Estoque", JOptionPane.INFORMATION_MESSAGE,icon);
+                                                if (quantity != null) {
+                                                    if (Integer.parseInt(quantity) > 0) {
+                                                        ps.addQuantity(position, Integer.parseInt(quantity));
+
+                                                        JOptionPane.showMessageDialog(null, "Edição efetuada com sucesso!", "Adicionar ao Estoque", JOptionPane.INFORMATION_MESSAGE, icon);
                                                         break EDIT_PRODUCT;
+                                                    } else {
+                                                        throw new InputMismatchException("O valor referente à quantidade deve ser maior que zero");
                                                     }
-                                                    else{
-                                                        JOptionPane.showMessageDialog(null,"Erro ao editar o produto","Adicionar ao Estoque", JOptionPane.ERROR_MESSAGE);
-                                                    }
+                                                } else{
+                                                    throw new InputMismatchException("O campo deve ser preenchido");
                                                 }
-                                                else{
-                                                    JOptionPane.showMessageDialog(null,"Erro ao editar o produto\n\nO valor referente à quantidade deve ser maior que zero","Adicionar ao Estoque", JOptionPane.ERROR_MESSAGE);
-                                                }
+                                            } else {
+                                                throw new ProductServiceException("O código inserido não corresponde a nenhum produto");
                                             }
+                                        } catch (ProductServiceException | InputMismatchException e) {
+                                            JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage(), "Adicionar ao Estoque", JOptionPane.ERROR_MESSAGE);
                                         }
-                                        else{
-                                            Object[] erroEdicao = {"Inserir novo código", "Cancelar Edição"};
-
-                                            option = JOptionPane.showOptionDialog(null, "O código inserido não corresponde a nenhum produto", "Editar Dados Cadastrais do Produto", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, erroEdicao, erroEdicao[0]);
-
-                                            if (option == 1){
-                                                break ADD_QUANTITY;
-                                            }
-                                        }
-                                    }while(true);
+                                    } while (true);
                                 }
                                 case 2 -> { //Remover do Estoque
-                                    REMOVE_QUANTITY:
-                                    do{
-                                        String code = JOptionPane.showInputDialog(null, "Insira o código correspondente ao produto cuja quantidade de estoque deseja diminuir:\n\n"+
-                                                "Código, Código de barras, Série, Nome, Descrição, Categoria, Preço, Data de fabricação, Data de validade, Cor, Material, Quantidade em estoque\n"+
-                                                u.listProductBuilder(), "Remover do Estoque", JOptionPane.QUESTION_MESSAGE);
+                                    do {
+                                        try {
+                                            String code = JOptionPane.showInputDialog(null, "Insira o código correspondente ao produto cuja quantidade de estoque deseja aumentar:\n\n" +
+                                                    "Código, Código de barras, Série, Nome, Descrição, Categoria, Preço, Data de fabricação, Data de validade, Cor, Material, Quantidade em estoque\n" +
+                                                    u.listProductBuilder(), "Remover do Estoque", JOptionPane.QUESTION_MESSAGE);
 
+                                            int position = ps.verifyExistingProduct(code);
 
-                                        int i = ps.verifyExistingProduct(code);
-                                        if (code != null && i != -1){
-                                            String quantity = JOptionPane.showInputDialog(null, "Insira a quantidade a ser removida do estoque:\n\n", "Remover do Estoque", JOptionPane.QUESTION_MESSAGE);
+                                            if (position != -1) {
+                                                String quantity = JOptionPane.showInputDialog(null, "Insira a quantidade a ser adicionada ao estoque:", "Remover do Estoque", JOptionPane.QUESTION_MESSAGE);
 
-                                            if (quantity != null){
-                                                if (Integer.parseInt(quantity) > 0){
-                                                    if (ps.removeQuantity(code, Integer.parseInt(quantity))){
-                                                        JOptionPane.showMessageDialog(null,"Edição efetuada com sucesso!","Remover do Estoque", JOptionPane.INFORMATION_MESSAGE,icon);
+                                                if (quantity != null) {
+                                                    if (Integer.parseInt(quantity) > 0) {
+                                                        ps.removeQuantity(position, Integer.parseInt(quantity));
+
+                                                        JOptionPane.showMessageDialog(null, "Edição efetuada com sucesso!", "Remover do Estoque", JOptionPane.INFORMATION_MESSAGE, icon);
                                                         break EDIT_PRODUCT;
+                                                    } else {
+                                                        throw new InputMismatchException("O valor referente à quantidade deve ser maior que zero");
                                                     }
-                                                    else{
-                                                        JOptionPane.showMessageDialog(null,"Erro ao editar o produto","Remover do Estoque", JOptionPane.ERROR_MESSAGE);
-                                                    }
+                                                } else{
+                                                    throw new InputMismatchException("O campo deve ser preenchido");
                                                 }
-                                                else{
-                                                    JOptionPane.showMessageDialog(null,"Erro ao editar o produto\n\nO valor referente à quantidade deve ser maior que zero","Adicionar ao Estoque", JOptionPane.ERROR_MESSAGE);
-                                                }
+                                            } else {
+                                                throw new ProductServiceException("O código inserido não corresponde a nenhum produto");
                                             }
+                                        } catch (ProductServiceException | InputMismatchException e) {
+                                            JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage(), "Remover do Estoque", JOptionPane.ERROR_MESSAGE);
                                         }
-                                        else{
-                                            Object[] erroEdicao = {"Inserir novo código", "Cancelar Edição"};
-
-                                            option = JOptionPane.showOptionDialog(null, "O código inserido não corresponde a nenhum produto", "Editar Dados Cadastrais do Produto", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, erroEdicao, erroEdicao[0]);
-
-                                            if (option == 1){
-                                                break REMOVE_QUANTITY;
-                                            }
-                                        }
-                                    }while(true);
+                                    } while (true);
                                 }
                                 case 3 -> { //Cancelar
                                     break EDIT_PRODUCT;
                                 }
                             }
-                        }while(true);
-                    }
-                    else{
+                        } while(true);
+                    } else{
                         JOptionPane.showMessageDialog(null,"Não há produtos cadastrados","Editar Produto", JOptionPane.INFORMATION_MESSAGE);
                     }
                 }
                 case 2 -> { //Delete product
                     if (Product.productList.size() >= 1){
                         do{
-                            String code = JOptionPane.showInputDialog(null, "Insira o código correspondente ao produto à ser excluído:\n\n"+
-                                    "Código, Código de barras, Série, Nome, Descrição, Categoria, Preço, Data de fabricação, Data de validade, Cor, Material, Quantidade em estoque\n"+
-                                    u.listProductBuilder(), "Excluir Produto", JOptionPane.QUESTION_MESSAGE);
+                            try{
+                                String code = JOptionPane.showInputDialog(null, "Insira o código correspondente ao produto à ser excluído:\n\n"+
+                                        "Código, Código de barras, Série, Nome, Descrição, Categoria, Preço, Data de fabricação, Data de validade, Cor, Material, Quantidade em estoque\n"+
+                                        u.listProductBuilder(), "Excluir Produto", JOptionPane.QUESTION_MESSAGE);
 
-                            int i = ps.verifyExistingProduct(code);
-                            if (code != null && i != -1){
-                                option = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir "+Product.productList.get(i).getName()+"?", "Excluir Produto",
-                                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                                int position = ps.verifyExistingProduct(code);
 
-                                if (option == JOptionPane.YES_OPTION){
-                                    boolean result = ps.removeProduct(code);
+                                if (code != null && position != -1){
+                                    option = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir "+Product.productList.get(position).getName()+"?", "Excluir Produto",
+                                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-                                    if (result){
-                                        JOptionPane.showMessageDialog(null,"Produto excluído!","Excluir Produto", JOptionPane.INFORMATION_MESSAGE,icon);
-                                        break;
+                                    if (option == JOptionPane.YES_OPTION){
+                                        if (ps.removeProduct(position)){
+                                            JOptionPane.showMessageDialog(null,"Produto excluído!","Excluir Produto", JOptionPane.INFORMATION_MESSAGE,icon);
+                                            break;
+                                        }
                                     }
-                                    else{
-                                        JOptionPane.showMessageDialog(null,"Erro ao excluir o produto","Excluir Produto", JOptionPane.ERROR_MESSAGE);
-                                    }
-                                    break;
+                                } else{
+                                    throw new ProductServiceException("Erro ao exluir o produto, o código inserido não corresponde a nenhum produto");
                                 }
+                            } catch (ProductServiceException e){
+                                JOptionPane.showMessageDialog(null,e.getMessage(),"Excluir Produto", JOptionPane.ERROR_MESSAGE);
                             }
-                            else{
-                                break;
-                            }
-                        }while(true);
-                    }
-                    else{
+                        } while(true);
+                    } else{
                         JOptionPane.showMessageDialog(null,"Não há produtos cadastrados","Excluir Produto", JOptionPane.INFORMATION_MESSAGE);
                     }
                 }
                 case 3 -> { //Import product
                     do{
-                        String path = JOptionPane.showInputDialog(null, "Insira o caminho para o arquivo a ser importado (exemplo: 'C:\\Users\\nome\\arquivo.csv'):", "Importar Produto", JOptionPane.QUESTION_MESSAGE);
+                        try{
+                            String path = JOptionPane.showInputDialog(null, "Insira o caminho para o arquivo a ser importado (exemplo: 'C:\\Users\\nome\\arquivo.csv'):", "Importar Produto", JOptionPane.QUESTION_MESSAGE);
 
-                        if (path != null){
-                            try {
-                                boolean result = ps.addProductByImport(path);
+                            ps.addProductByImport(path);
 
-                                if (result){
-                                    JOptionPane.showMessageDialog(null,"Produtos importados com sucesso!\nLista de novos produtos:\n\n"+u.listProductBuilder(),"Importar Produto", JOptionPane.INFORMATION_MESSAGE,icon);
-                                }
-                                else{
-                                    JOptionPane.showMessageDialog(null,"Produtos importados com sucesso!\nLista de novos produtos:\n\n"+u.listProductBuilder(),"Importar Produto", JOptionPane.INFORMATION_MESSAGE,icon);
-                                }
-                                break;
-                            }
-                            catch (Exception e) {
-                                JOptionPane.showMessageDialog(null,"Erro ("+e.getMessage()+") ao importar o produto","Importar Produto", JOptionPane.ERROR_MESSAGE);
-                            }
-                        }
-                        else{
+                            JOptionPane.showMessageDialog(null,"Produtos importados com sucesso!\nLista de novos produtos:\n\n"+u.listProductBuilder(),"Importar Produto", JOptionPane.INFORMATION_MESSAGE,icon);
                             break;
+                        } catch (ProductServiceException e){
+                            JOptionPane.showMessageDialog(null,e.getMessage(),"Importar Produto", JOptionPane.ERROR_MESSAGE);
                         }
-                    }while(true);
+                    } while(true);
                 }
                 case 4 -> { //List Products
-                    JOptionPane.showMessageDialog(null,"Produtos cadastrados:\n\n"+
-                            "Código, Código de barras, Série, Nome, Descrição, Categoria, Preço, Data de fabricação, Data de validade, Cor, Material, Quantidade em estoque\n"+
-                            u.listProductBuilder(),"Listar Produtos", JOptionPane.INFORMATION_MESSAGE);
+                    if (Product.productList.size() >= 1){
+                        JOptionPane.showMessageDialog(null,"Produtos cadastrados:\n\n"+
+                                "Código, Código de barras, Série, Nome, Descrição, Categoria, Preço, Data de fabricação, Data de validade, Cor, Material, Quantidade em estoque\n"+
+                                u.listProductBuilder(),"Listar Produtos", JOptionPane.INFORMATION_MESSAGE);
+                    } else{
+                        JOptionPane.showMessageDialog(null,"Não há produtos cadastrados","Listar Produtos", JOptionPane.INFORMATION_MESSAGE);
+                    }
                 }
                 case 5 -> { //Exit
                     break APP;
                 }
             }
-        }while(true);
+        } while(true);
     }
 }
