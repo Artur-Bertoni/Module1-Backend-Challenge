@@ -1,5 +1,6 @@
 package service;
 
+import Utilities.Utils;
 import com.opencsv.CSVReader;
 import entities.Product;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -12,47 +13,47 @@ import java.util.*;
 import java.lang.Math;
 
 public class ProductService extends Product {
-    //TODO criar e implementar exceptions
+
     public void addProduct(String name, BigDecimal price, String quantity, String category){
         try{
-            if (Integer.parseInt(quantity) >= 0) {
-                Product p = new Product();
+            Product p = new Product();
+            Utils u = new Utils();
 
-                p.setName(name);
-                p.setPrice(price);
-                p.setCategory(category);
-                p.setQuantity(Integer.parseInt(quantity));
+            p.setName(name);
+            p.setPrice(price);
+            p.setCategory(category);
+            p.setQuantity(Integer.parseInt(quantity));
 
-                String code;
-                long barCode;
+            String code;
+            long barCode;
 
-                boolean exit;
-                do {
-                    exit = true;
-                    code = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
-                    barCode = Math.abs(Long.parseLong(RandomStringUtils.randomNumeric(12)));
+            boolean exit;
+            do {
+                exit = true;
+                code = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
+                barCode = Math.abs(Long.parseLong(RandomStringUtils.randomNumeric(12)));
 
-                    for (Product p2 : productList) {
-                        if (code.equals(p2.getCode()) || barCode == p2.getBarCode()) {
-                            exit = false;
-                            break;
-                        }
+                for (Product p2 : productList) {
+                    if (code.equals(p2.getCode()) || barCode == p2.getBarCode()) {
+                        exit = false;
+                        break;
                     }
-                } while (!exit);
+                }
+            } while(!exit);
 
-                p.setCode(code);
-                p.setBarCode(barCode);
-                p.setSeries("n/a");
-                p.setDescription("n/a");
-                p.setManufacturingDate(new Date());
-                p.setExpirationDate(null);
-                p.setColor("n/a");
-                p.setMaterial("n/a");
+            p.setCode(code);
+            p.setBarCode(barCode);
+            p.setSeries("n/a");
+            p.setDescription("n/a");
+            p.setManufacturingDate(new Date());
+            p.setExpirationDate(null);
+            p.setColor("n/a");
+            p.setMaterial("n/a");
 
-                productList.add(p);
-            }
-        }
-        catch(Exception e){
+            productList.add(p);
+
+            u.writeNewCSVFile();
+        } catch(Exception e){
             throw new ProductServiceException(e.getMessage());
         }
     }
@@ -101,7 +102,7 @@ public class ProductService extends Product {
                         expirationDate = sdf.parse(cols.get("data de validade"));
                     }
                 } catch (ParseException e) {
-                    throw new ProductServiceException("Erro ("+e.getMessage()+") ao importar o produto '"+name+"'");
+                    throw new ProductServiceException(e.getMessage());
                 }
 
                 String color = cols.get("cor");
@@ -125,17 +126,15 @@ public class ProductService extends Product {
 
                     productList.add(p);
                     cont[0]++;
-                }
-                catch (Exception e){
+                } catch (Exception e){
                     throw new ProductServiceException(e.getMessage());
                 }
             });
-        }
-        catch(Exception e){
+        } catch(Exception e){
             throw new ProductServiceException(e.getMessage());
         }
     }
-    //TODO ajustar edições de protudo
+
     public void editProduct(Long barCode, String series, String name, String description, String category, BigDecimal price, Date manufacturingDate, Date expirationDate, String color, String material, String quantity, int position){
         try{
             if (barCode != null) productList.get(position).setBarCode(barCode);
@@ -149,8 +148,7 @@ public class ProductService extends Product {
             if (color != null) productList.get(position).setColor(color);
             if (material != null) productList.get(position).setMaterial(material);
             if (quantity != null) productList.get(position).setQuantity(Integer.parseInt(quantity));
-        }
-        catch(Exception e){
+        } catch(Exception e){
             throw new ProductServiceException(e.getMessage());
         }
     }
@@ -159,8 +157,7 @@ public class ProductService extends Product {
         try{
             productList.remove(position);
             return true;
-        }
-        catch(Exception e){
+        } catch(Exception e){
             throw new ProductServiceException(e.getMessage());
         }
     }
@@ -168,8 +165,7 @@ public class ProductService extends Product {
     public void addQuantity(int position, int quantity){
         try{
             productList.get(position).setQuantity(productList.get(position).getQuantity()+quantity);
-        }
-        catch(Exception e){
+        } catch(Exception e){
             throw new ProductServiceException(e.getMessage());
         }
     }
@@ -181,18 +177,21 @@ public class ProductService extends Product {
             }
 
             productList.get(position).setQuantity(productList.get(position).getQuantity() - quantity);
-        }
-        catch(Exception e){
+        } catch(Exception e){
             throw new ProductServiceException(e.getMessage());
         }
     }
 
     public int verifyExistingProduct(String code){
-        for (int position=0; position<Product.productList.size(); position++){
-            if (code.equalsIgnoreCase(Product.productList.get(position).getCode())){
-                return position;
+        try{
+            for (int position=0; position<Product.productList.size(); position++){
+                if (code.equalsIgnoreCase(Product.productList.get(position).getCode())){
+                    return position;
+                }
             }
+            return -1;
+        } catch (Exception e){
+            throw new ProductServiceException(e.getMessage());
         }
-        return -1;
     }
 }

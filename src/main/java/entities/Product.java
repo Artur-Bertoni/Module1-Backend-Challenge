@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Product {
-    //Atributos
+    //TODO criar variáveis valor bruto e impostos
     private String name, category, code, series, description, color, material;
     private BigDecimal price;
     private Integer quantity;
@@ -16,11 +16,9 @@ public class Product {
 
     public static List<Product> productList = new ArrayList<>();
 
-    //Constructors
     public Product() {
     }
 
-    //Getters / Setters
     public String getName() {
         return name;
     }
@@ -112,22 +110,17 @@ public class Product {
 
     public String getExpirationDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        return sdf.format(expirationDate);
+        return expirationDate == null ? "n/a" : sdf.format(expirationDate);
     }
 
     public void setExpirationDate(Date expirationDate) {
         this.expirationDate = expirationDate;
     }
 
-    //Métodos
     public String toString(int i) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-        String expirationDate = getExpirationDate() == null ? "n/a" : sdf.format(productList.get(i).getExpirationDate());
-
         return  productList.get(i).getCode() + ", " + productList.get(i).getBarCode() + ", " + productList.get(i).getSeries() + ", " + productList.get(i).getName() + ", '" +
                 productList.get(i).getDescription() + "', " + productList.get(i).getCategory() + ", '" + String.format("%.2f",productList.get(i).getPrice()) + "', " +
-                sdf.format(productList.get(i).getManufacturingDate()) + ", " + expirationDate + ", " + productList.get(i).getColor() + ", " + productList.get(i).getMaterial() + ", " +
-                productList.get(i).getQuantity();
+                productList.get(i).getManufacturingDate() + ", " + productList.get(i).getExpirationDate() + ", " + productList.get(i).getColor() + ", " +
+                productList.get(i).getMaterial() + ", " + productList.get(i).getQuantity();
     }
 }
