@@ -41,6 +41,8 @@ public class ProductService extends Product {
                 }
             } while(!exit);
 
+            p.setTaxes(BigDecimal.valueOf(0));
+            p.setGrossAmount(BigDecimal.valueOf(0));
             p.setCode(code);
             p.setBarCode(barCode);
             p.setSeries("n/a");
@@ -91,7 +93,10 @@ public class ProductService extends Product {
                 String name = cols.get("nome");
                 String description = cols.get("descrição");
                 String category = cols.get("categoria");
-                BigDecimal price = new BigDecimal(cols.get("valor bruto").replace(",",".")).add(((new BigDecimal(cols.get("impostos (%)").replace(",","."))).divide(new BigDecimal(100))).multiply(new BigDecimal(cols.get("valor bruto").replace(",","."))));
+                BigDecimal taxes = new BigDecimal(cols.get("impostos (%)").replace(',','.'));
+                BigDecimal grossAmount = new BigDecimal(cols.get("valor bruto").replace(',','.'));
+                BigDecimal price = grossAmount.add((taxes.divide(BigDecimal.valueOf(100))).multiply(grossAmount));
+                price = price.add(price.multiply(BigDecimal.valueOf(0.45)));
                 Date manufacturingDate = null, expirationDate = null;
 
                 try {
@@ -117,6 +122,8 @@ public class ProductService extends Product {
                     p.setName(name);
                     p.setDescription(description);
                     p.setCategory(category);
+                    p.setGrossAmount(grossAmount);
+                    p.setTaxes(taxes);
                     p.setPrice(price);
                     p.setManufacturingDate(manufacturingDate);
                     p.setExpirationDate(expirationDate);
@@ -135,19 +142,25 @@ public class ProductService extends Product {
         }
     }
 
-    public void editProduct(Long barCode, String series, String name, String description, String category, BigDecimal price, Date manufacturingDate, Date expirationDate, String color, String material, String quantity, int position){
+    public void editProduct(Long barCode, String series, String name, String description, String category, BigDecimal grossAmount, BigDecimal taxes, BigDecimal price, Date manufacturingDate, Date expirationDate, String color, String material, String quantity, int position){
         try{
+            Utils u = new Utils();
+
             if (barCode != null) productList.get(position).setBarCode(barCode);
             if (series != null) productList.get(position).setSeries(series);
             if (name != null) productList.get(position).setName(name);
             if (description != null) productList.get(position).setDescription(description);
             if (category != null) productList.get(position).setCategory(category);
+            if (grossAmount != null) productList.get(position).setGrossAmount(grossAmount);
+            if (taxes != null) productList.get(position).setTaxes(taxes);
             if (price != null) productList.get(position).setPrice(price);
             if (manufacturingDate != null) productList.get(position).setManufacturingDate(manufacturingDate);
             if (expirationDate != null) productList.get(position).setExpirationDate(expirationDate);
             if (color != null) productList.get(position).setColor(color);
             if (material != null) productList.get(position).setMaterial(material);
             if (quantity != null) productList.get(position).setQuantity(Integer.parseInt(quantity));
+
+
         } catch(Exception e){
             throw new ProductServiceException(e.getMessage());
         }
@@ -155,7 +168,11 @@ public class ProductService extends Product {
 
     public boolean removeProduct(int position){
         try{
+            Utils u = new Utils();
+
             productList.remove(position);
+
+            u.writeNewCSVFile();
             return true;
         } catch(Exception e){
             throw new ProductServiceException(e.getMessage());
@@ -164,7 +181,11 @@ public class ProductService extends Product {
 
     public void addQuantity(int position, int quantity){
         try{
+            Utils u = new Utils();
+
             productList.get(position).setQuantity(productList.get(position).getQuantity()+quantity);
+
+            u.writeNewCSVFile();
         } catch(Exception e){
             throw new ProductServiceException(e.getMessage());
         }
@@ -175,8 +196,11 @@ public class ProductService extends Product {
             if (productList.get(position).getQuantity()-quantity < 0){
                 throw new ProductServiceException("A quantia inserida para a remoção é maior do que a quantia em estoque");
             }
+            Utils u = new Utils();
 
             productList.get(position).setQuantity(productList.get(position).getQuantity() - quantity);
+
+            u.writeNewCSVFile();
         } catch(Exception e){
             throw new ProductServiceException(e.getMessage());
         }

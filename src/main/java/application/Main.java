@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Main {
-    public static String path = null; //TODO aplicar obrigatoriedade de path em todas as funções do app
+    public static String path = null;
     public static void main(String[] args) {
         ImageIcon icon = new ImageIcon("images/checkmark.png");
 
@@ -46,7 +46,7 @@ public class Main {
                             if (option == JOptionPane.OK_OPTION){
                                 if (Integer.parseInt(quantityTXT.getText()) >= 0){
                                     if (path == null){
-                                        path = JOptionPane.showInputDialog(null, "Insira o caminho para a sua lista de produtos ser salva (exemplo: 'C:\\Users\\nome\\arquivo.csv'):", "Adicionar Produto", JOptionPane.QUESTION_MESSAGE);
+                                        path = JOptionPane.showInputDialog(null, "Insira o caminho e o nome do arquivoem que deseja salvar a sua lista de produtos (exemplo: 'C:\\Users\\nome\\arquivo.csv'):", "Adicionar Produto", JOptionPane.QUESTION_MESSAGE);
                                     }
 
                                     ps.addProduct(nameTXT.getText(), new BigDecimal(priceTXT.getText()), quantityTXT.getText(), categoryTXT.getText());
@@ -65,7 +65,6 @@ public class Main {
                     } while(true);
                 }
                 case 1 -> { //Edit product
-                    //TODO alterar arquivo .csv com alterações in-app
                     if (Product.productList.size() >= 1){
                         EDIT_PRODUCT:
                         do{
@@ -91,7 +90,9 @@ public class Main {
                                                     JTextField nameTXT                       = new JTextField();                    nameTXT.setText(Product.productList.get(position).getName());
                                                     JTextField descriptionTXT                = new JTextField();                    descriptionTXT.setText(Product.productList.get(position).getDescription());
                                                     JTextField categoryTXT                   = new JTextField();                    categoryTXT.setText(Product.productList.get(position).getCategory());
-                                                    JTextField priceTXT                      = new JTextField();                    priceTXT.setText(String.format("%.2f",Product.productList.get(position).getPrice()));
+                                                    JTextField grossAmountTXT                = new JTextField();                    grossAmountTXT.setText(String.format("%.2f", Product.productList.get(position).getGrossAmount()));
+                                                    JTextField taxesTXT                      = new JTextField();                    taxesTXT.setText(String.format("%.2f", Product.productList.get(position).getTaxes()));
+                                                    JTextField priceTXT                      = new JTextField();                    priceTXT.setText(String.format("%.2f", Product.productList.get(position).getPrice()));
                                                     JFormattedTextField manufacturingDateTXT = new JFormattedTextField(dateMask);   manufacturingDateTXT.setText(Product.productList.get(position).getManufacturingDate());
                                                     JFormattedTextField expirationDateTXT    = new JFormattedTextField(dateMask);   expirationDateTXT.setText(Product.productList.get(position).getExpirationDate());
                                                     JTextField colorTXT                      = new JTextField();                    colorTXT.setText(Product.productList.get(position).getColor());
@@ -99,7 +100,7 @@ public class Main {
                                                     JTextField quantityTXT                   = new JTextField();                    quantityTXT.setText(String.valueOf(Product.productList.get(position).getQuantity()));
 
                                                     Object[] editProduct = {"Dados do produto "+p.getCode()+":\n\nCódigo de barras:", barCodeTXT, "Série:", seriesTXT, "Nome:", nameTXT, "Descrição:", descriptionTXT,
-                                                            "Categoria:", categoryTXT, "Preço:", priceTXT, "Data de fabricação:", manufacturingDateTXT, "Data de validade:", expirationDateTXT, "Quantidade:", quantityTXT};
+                                                            "Categoria:", categoryTXT, "Valor bruto:", grossAmountTXT, "Impostos (%):", taxesTXT, "Valor líquido:", priceTXT, "Data de fabricação:", manufacturingDateTXT, "Data de validade:", expirationDateTXT, "Quantidade:", quantityTXT};
 
                                                     do{
                                                         try{
@@ -108,7 +109,7 @@ public class Main {
                                                             if (option == JOptionPane.OK_OPTION){
                                                                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-                                                                ps.editProduct(Long.parseLong(barCodeTXT.getText()), seriesTXT.getText(), nameTXT.getText(), descriptionTXT.getText(), categoryTXT.getText(), new BigDecimal(priceTXT.getText()), sdf.parse(manufacturingDateTXT.getText()), sdf.parse(expirationDateTXT.getText()), colorTXT.getText(), materialTXT.getText(), quantityTXT.getText(), position);
+                                                                ps.editProduct(Long.parseLong(barCodeTXT.getText()), seriesTXT.getText(), nameTXT.getText(), descriptionTXT.getText(), categoryTXT.getText(), new BigDecimal(grossAmountTXT.getText()), new BigDecimal(taxesTXT.getText()), new BigDecimal(priceTXT.getText()), sdf.parse(manufacturingDateTXT.getText()), sdf.parse(expirationDateTXT.getText()), colorTXT.getText(), materialTXT.getText(), quantityTXT.getText(), position);
 
                                                                 JOptionPane.showMessageDialog(null,"Edição efetuada com sucesso!","Editar Dados Cadastrais do Produto", JOptionPane.INFORMATION_MESSAGE,icon);
                                                                 break EDIT_PRODUCT;
@@ -120,6 +121,9 @@ public class Main {
                                                         }
                                                     } while(true);
                                                 } else{
+                                                    if (code.equals("")){
+                                                        throw new ProductServiceException("O campo deve ser preenchido");
+                                                    }
                                                     throw new ProductServiceException("O código inserido não corresponde a nenhum produto");
                                                 }
                                             } else{
@@ -143,7 +147,9 @@ public class Main {
                                                     String quantity = JOptionPane.showInputDialog(null, "Insira a quantidade a ser adicionada ao estoque:", "Adicionar ao Estoque", JOptionPane.QUESTION_MESSAGE);
 
                                                     if (quantity != null) {
-                                                        if (Integer.parseInt(quantity) > 0) {
+                                                        if (quantity.equals("")){
+                                                            throw new ProductServiceException("O campo deve ser preenchido");
+                                                        } else if (Integer.parseInt(quantity) > 0) {
                                                             ps.addQuantity(position, Integer.parseInt(quantity));
 
                                                             JOptionPane.showMessageDialog(null, "Edição efetuada com sucesso!", "Adicionar ao Estoque", JOptionPane.INFORMATION_MESSAGE, icon);
@@ -155,6 +161,9 @@ public class Main {
                                                         throw new InputMismatchException("O campo deve ser preenchido");
                                                     }
                                                 } else {
+                                                    if (code.equals("")){
+                                                        throw new ProductServiceException("O campo deve ser preenchido");
+                                                    }
                                                     throw new ProductServiceException("O código inserido não corresponde a nenhum produto");
                                                 }
                                             } else{
@@ -178,7 +187,9 @@ public class Main {
                                                     String quantity = JOptionPane.showInputDialog(null, "Insira a quantidade a ser adicionada ao estoque:", "Remover do Estoque", JOptionPane.QUESTION_MESSAGE);
 
                                                     if (quantity != null) {
-                                                        if (Integer.parseInt(quantity) > 0) {
+                                                        if (quantity.equals("")){
+                                                            throw new ProductServiceException("O campo deve ser preenchido");
+                                                        } else if (Integer.parseInt(quantity) > 0) {
                                                             ps.removeQuantity(position, Integer.parseInt(quantity));
 
                                                             JOptionPane.showMessageDialog(null, "Edição efetuada com sucesso!", "Remover do Estoque", JOptionPane.INFORMATION_MESSAGE, icon);
@@ -190,6 +201,9 @@ public class Main {
                                                         throw new InputMismatchException("O campo deve ser preenchido");
                                                     }
                                                 } else {
+                                                    if (code.equals("")){
+                                                        throw new ProductServiceException("O campo deve ser preenchido");
+                                                    }
                                                     throw new ProductServiceException("O código inserido não corresponde a nenhum produto");
                                                 }
                                             } else{
@@ -230,6 +244,9 @@ public class Main {
                                             }
                                         }
                                     } else{
+                                        if (code.equals("")){
+                                            throw new ProductServiceException("O campo deve ser preenchido");
+                                        }
                                         throw new ProductServiceException("O código inserido não corresponde a nenhum produto");
                                     }
                                 } else{
@@ -249,11 +266,12 @@ public class Main {
                             path = JOptionPane.showInputDialog(null, "Insira o caminho para o arquivo a ser importado (exemplo: 'C:\\Users\\nome\\arquivo.csv'):", "Importar Produto", JOptionPane.QUESTION_MESSAGE);
 
                             if (path != null){
+                                if (path.equals("")){
+                                    throw new ProductServiceException("O campo deve ser preenchido");
+                                }
                                 ps.addProductByImport(path);
 
                                 JOptionPane.showMessageDialog(null,"Produtos importados com sucesso!\nLista de novos produtos:\n\n"+u.listProductBuilder(),"Importar Produto", JOptionPane.INFORMATION_MESSAGE,icon);
-                                break;
-                            } else{
                                 break;
                             }
                         } catch (ProductServiceException e){

@@ -1,15 +1,18 @@
 package entities;
 
+import Utilities.CsvBindByNameOrder;
+import com.opencsv.bean.CsvBindByName;
+
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+@CsvBindByNameOrder
 public class Product {
-    //TODO criar variáveis valor bruto e impostos
+    @CsvBindByName(column = "Nome")
     private String name, category, code, series, description, color, material;
-    private BigDecimal price;
+    private BigDecimal price, grossAmount, taxes;
     private Integer quantity;
     private Long barCode;
     private Date manufacturingDate, expirationDate;
@@ -83,6 +86,22 @@ public class Product {
         this.price = price;
     }
 
+    public BigDecimal getGrossAmount() {
+        return grossAmount;
+    }
+
+    public void setGrossAmount(BigDecimal grossAmount) {
+        this.grossAmount = grossAmount;
+    }
+
+    public BigDecimal getTaxes() {
+        return taxes;
+    }
+
+    public void setTaxes(BigDecimal taxes) {
+        this.taxes = taxes;
+    }
+
     public Integer getQuantity() {
         return quantity;
     }
@@ -119,7 +138,8 @@ public class Product {
 
     public String toString(int i) {
         return  productList.get(i).getCode() + ", " + productList.get(i).getBarCode() + ", " + productList.get(i).getSeries() + ", " + productList.get(i).getName() + ", '" +
-                productList.get(i).getDescription() + "', " + productList.get(i).getCategory() + ", '" + String.format("%.2f",productList.get(i).getPrice()) + "', " +
+                productList.get(i).getDescription() + "', " + productList.get(i).getCategory() + ", '" + String.format("%.2f", productList.get(i).grossAmount) + ", " +
+                String.format("%.2f",productList.get(i).getTaxes()) + ", " + String.format("%.2f",productList.get(i).getPrice()) + "', " +
                 productList.get(i).getManufacturingDate() + ", " + productList.get(i).getExpirationDate() + ", " + productList.get(i).getColor() + ", " +
                 productList.get(i).getMaterial() + ", " + productList.get(i).getQuantity();
     }
