@@ -1,6 +1,6 @@
 package entities;
 
-import Utilities.CsvBindByNameOrder;
+import Utilities.CsvWriter.CsvBindByNameOrder;
 import com.opencsv.bean.CsvBindByName;
 
 import java.math.BigDecimal;
@@ -8,14 +8,24 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-@CsvBindByNameOrder
+
+@CsvBindByNameOrder({"código","codigo de barras","série","nome","descrição","categoria","valor bruto","impostos (%)","valor líquido","data de fabricação","data de validade","cor","material","quantidade"})
 public class Product {
-    @CsvBindByName(column = "Nome")
-    private String name, category, code, series, description, color, material;
-    private BigDecimal price, grossAmount, taxes;
-    private Integer quantity;
-    private Long barCode;
-    private Date manufacturingDate, expirationDate;
+
+    @CsvBindByName(column = "código") private String code;
+    @CsvBindByName(column = "categoria") private String category;
+    @CsvBindByName(column = "série") private String series;
+    @CsvBindByName(column = "descrição") private String description;
+    @CsvBindByName(column = "cor") private String color;
+    @CsvBindByName(column = "material") private String material;
+    @CsvBindByName(column = "nome") private String name;
+    @CsvBindByName(column = "valor bruto") private BigDecimal grossAmount;
+    @CsvBindByName(column = "impostos (%)") private BigDecimal taxes;
+    @CsvBindByName(column = "valor líquido") private BigDecimal price;
+    @CsvBindByName(column = "quantidade") private Integer quantity;
+    @CsvBindByName(column = "codigo de barras") private Long barCode;
+    @CsvBindByName(column = "data de fabricação") private Date manufacturingDate;
+    @CsvBindByName(column = "data de validade") private Date expirationDate;
 
     public static List<Product> productList = new ArrayList<>();
 

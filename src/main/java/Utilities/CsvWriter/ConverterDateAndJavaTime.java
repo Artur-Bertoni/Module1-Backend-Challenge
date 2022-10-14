@@ -1,4 +1,4 @@
-package Utilities;
+package Utilities.CsvWriter;
 
 import com.opencsv.bean.ConverterDate;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
@@ -24,7 +24,7 @@ public class ConverterDateAndJavaTime extends ConverterDate {
      * @param errorLocale The locale to use for error messages.
      */
     public ConverterDateAndJavaTime(Class<?> type, String locale, Locale errorLocale, String formatString) {
-        super(type, locale, errorLocale, formatString);
+        super(type, locale, formatString, errorLocale, null, null, null, null);
 
         // if the type is LocalDate and using the default format, we know it will fail. Lets use just the date portion of the default date format
         if (DEFAULT_FORMAT.equals(formatString) && LocalDate.class.isAssignableFrom(type)) {

@@ -1,4 +1,4 @@
-package Utilities;
+package Utilities.CsvWriter;
 
 import com.opencsv.bean.BeanField;
 import com.opencsv.bean.CsvBindByName;
@@ -21,7 +21,7 @@ public class HeaderColumnNameAndOrderMappingStrategy<T> extends HeaderColumnName
         // overriding this method to allow us to preserve the header column name casing
 
         String[] header = super.generateHeader(bean);
-        final int numColumns = headerIndex.findMaxIndex() + 1;
+        final int numColumns = headerIndex.findMaxIndex();
         if (numColumns == -1) {
             return header;
         }

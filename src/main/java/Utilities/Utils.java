@@ -1,7 +1,6 @@
 package Utilities;
 
-import com.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
-import com.opencsv.bean.MappingStrategy;
+import Utilities.CsvWriter.HeaderColumnNameAndOrderMappingStrategy;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
@@ -9,11 +8,9 @@ import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import service.ProductServiceException;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Comparator;
 
 import application.Main;
 import entities.Product;
@@ -33,12 +30,15 @@ public class Utils {
     //TODO dar continuidade ao writeNewCSVFile (traduzir, ordenar)
     public void writeNewCSVFile(){
         try{
-            StringWriter writer = new StringWriter();
+            Writer writer = Files.newBufferedWriter(Paths.get(Main.path));
             StatefulBeanToCsv<Product> csvWriter = new StatefulBeanToCsvBuilder<Product>(writer)
                     .withApplyQuotesToAll(false)
                     .withMappingStrategy(new HeaderColumnNameAndOrderMappingStrategy<>(Product.class))
+                    .withQuotechar('"')
+                    .withEscapechar('"')
                     .build();
             csvWriter.write(Product.productList);
+
 
             writer.flush();
             writer.close();
