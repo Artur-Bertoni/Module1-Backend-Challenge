@@ -109,14 +109,21 @@ public class Main {
                                                             if (option == JOptionPane.OK_OPTION){
                                                                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-                                                                ps.editProduct(Long.parseLong(barCodeTXT.getText()), seriesTXT.getText(), nameTXT.getText(), descriptionTXT.getText(), categoryTXT.getText(), new BigDecimal(grossAmountTXT.getText()), new BigDecimal(taxesTXT.getText()), new BigDecimal(priceTXT.getText()), sdf.parse(manufacturingDateTXT.getText()), sdf.parse(expirationDateTXT.getText()), colorTXT.getText(), materialTXT.getText(), quantityTXT.getText(), position);
+                                                                if (expirationDateTXT.getText().equals("  /  /    ")) {
+                                                                    expirationDateTXT.setText(sdf.format(new Date()));
+                                                                }
+
+                                                                ps.editProduct(Long.parseLong(barCodeTXT.getText()), seriesTXT.getText(), nameTXT.getText(), descriptionTXT.getText(), categoryTXT.getText(),
+                                                                        BigDecimal.valueOf(Double.parseDouble(grossAmountTXT.getText().replace(',','.'))),BigDecimal.valueOf(Double.parseDouble(taxesTXT.getText().replace(',','.'))),
+                                                                        BigDecimal.valueOf(Double.parseDouble(priceTXT.getText().replace(',','.'))), sdf.parse(manufacturingDateTXT.getText()), sdf.parse(expirationDateTXT.getText()), colorTXT.getText(), materialTXT.getText(),
+                                                                        quantityTXT.getText(), position);
 
                                                                 JOptionPane.showMessageDialog(null,"Edição efetuada com sucesso!","Editar Dados Cadastrais do Produto", JOptionPane.INFORMATION_MESSAGE,icon);
                                                                 break EDIT_PRODUCT;
                                                             } else{
                                                                 break;
                                                             }
-                                                        } catch (ProductServiceException e){
+                                                        } catch (Exception e){
                                                             JOptionPane.showMessageDialog(null,"Erro: "+e.getMessage(),"Editar Dados Cadastrais do Produto", JOptionPane.ERROR_MESSAGE);
                                                         }
                                                     } while(true);

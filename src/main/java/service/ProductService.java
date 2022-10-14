@@ -14,7 +14,7 @@ import java.lang.Math;
 
 public class ProductService extends Product {
 
-    public void addProduct(String name, BigDecimal price, String quantity, String category){
+    public void addProduct(String name, BigDecimal price, String quantity, String category){ //TODO setar campos vazios/ñ informados como nulos no banco
         try{
             Product p = new Product();
             Utils u = new Utils();
@@ -160,7 +160,7 @@ public class ProductService extends Product {
             if (material != null) productList.get(position).setMaterial(material);
             if (quantity != null) productList.get(position).setQuantity(Integer.parseInt(quantity));
 
-
+            u.writeNewCSVFile();
         } catch(Exception e){
             throw new ProductServiceException(e.getMessage());
         }
