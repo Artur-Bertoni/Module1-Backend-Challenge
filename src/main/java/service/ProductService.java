@@ -41,16 +41,16 @@ public class ProductService extends Product {
                 }
             } while(!exit);
 
-            p.setTaxes(BigDecimal.valueOf(0));
-            p.setGrossAmount(BigDecimal.valueOf(0));
             p.setCode(code);
             p.setBarCode(barCode);
-            p.setSeries("n/a");
-            p.setDescription("n/a");
-            p.setManufacturingDate(new Date());
+            p.setTaxes(null);
+            p.setGrossAmount(null);
+            p.setSeries(null);
+            p.setDescription(null);
+            p.setManufacturingDate(null);
             p.setExpirationDate(null);
-            p.setColor("n/a");
-            p.setMaterial("n/a");
+            p.setColor(null);
+            p.setMaterial(null);
 
             productList.add(p);
 

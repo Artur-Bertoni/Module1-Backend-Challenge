@@ -15,8 +15,10 @@ import java.util.*;
 
 public class Main {
     public static String path = null;
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
         ImageIcon icon = new ImageIcon("images/checkmark.png");
+        MaskFormatter dateMask = new MaskFormatter("##/##/####");
+        MaskFormatter seriesMask = new MaskFormatter("#/####");
 
         APP:
         do{
@@ -83,10 +85,8 @@ public class Main {
                                                 int position = ps.verifyExistingProduct(code);
 
                                                 if (position != -1){
-                                                    MaskFormatter dateMask = new MaskFormatter("##/##/####");
-
                                                     JTextField barCodeTXT                    = new JTextField();                    barCodeTXT.setText(Product.productList.get(position).getBarCode().toString());
-                                                    JTextField seriesTXT                     = new JTextField();                    seriesTXT.setText(Product.productList.get(position).getSeries());
+                                                    JFormattedTextField seriesTXT            = new JFormattedTextField();           seriesTXT.setText(Product.productList.get(position).getSeries());
                                                     JTextField nameTXT                       = new JTextField();                    nameTXT.setText(Product.productList.get(position).getName());
                                                     JTextField descriptionTXT                = new JTextField();                    descriptionTXT.setText(Product.productList.get(position).getDescription());
                                                     JTextField categoryTXT                   = new JTextField();                    categoryTXT.setText(Product.productList.get(position).getCategory());
@@ -136,7 +136,7 @@ public class Main {
                                             } else{
                                                 break;
                                             }
-                                        } catch (ProductServiceException | ParseException e){
+                                        } catch (ProductServiceException e){
                                             JOptionPane.showMessageDialog(null,"Erro: "+e.getMessage(),"Editar Dados Cadastrais do Produto", JOptionPane.ERROR_MESSAGE);
                                         }
                                     } while(true);

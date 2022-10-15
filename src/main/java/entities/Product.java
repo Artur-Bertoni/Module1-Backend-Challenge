@@ -2,6 +2,7 @@ package entities;
 
 import Utilities.CsvWriter.CsvBindByNameOrder;
 import com.opencsv.bean.CsvBindByName;
+import service.ProductServiceException;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -130,7 +131,7 @@ public class Product {
 
     public String getManufacturingDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        return sdf.format(manufacturingDate);
+        return manufacturingDate == null ? null : sdf.format(manufacturingDate);
     }
 
     public void setManufacturingDate(Date manufacturingDate) {
@@ -139,7 +140,7 @@ public class Product {
 
     public String getExpirationDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        return expirationDate == null ? "n/a" : sdf.format(expirationDate);
+        return expirationDate == null ? null : sdf.format(expirationDate);
     }
 
     public void setExpirationDate(Date expirationDate) {
@@ -147,10 +148,14 @@ public class Product {
     }
 
     public String toString(int i) {
-        return  productList.get(i).getCode() + ", " + productList.get(i).getBarCode() + ", " + productList.get(i).getSeries() + ", " + productList.get(i).getName() + ", '" +
-                productList.get(i).getDescription() + "', " + productList.get(i).getCategory() + ", '" + String.format("%.2f", productList.get(i).grossAmount) + ", " +
-                String.format("%.2f",productList.get(i).getTaxes()) + ", " + String.format("%.2f",productList.get(i).getPrice()) + "', " +
-                productList.get(i).getManufacturingDate() + ", " + productList.get(i).getExpirationDate() + ", " + productList.get(i).getColor() + ", " +
-                productList.get(i).getMaterial() + ", " + productList.get(i).getQuantity();
+        try{
+            return  productList.get(i).getCode() + ", " + productList.get(i).getBarCode() + ", " + productList.get(i).getSeries() + ", " + productList.get(i).getName() + ", '" +
+                    productList.get(i).getDescription() + "', " + productList.get(i).getCategory() + ", '" + productList.get(i).getGrossAmount() + ", " +
+                    productList.get(i).getTaxes() + ", " + productList.get(i).getPrice() + "', " +
+                    productList.get(i).getManufacturingDate() + ", " + productList.get(i).getExpirationDate() + ", " + productList.get(i).getColor() + ", " +
+                    productList.get(i).getMaterial() + ", " + productList.get(i).getQuantity();
+        } catch (Exception e){
+            throw new ProductServiceException("Retornar lista de produtos");
+        }
     }
 }

@@ -27,7 +27,7 @@ public class Utils {
 
         return new StringBuilder("Código, Código de barras, Série, Nome, Descrição, Categoria, Valor bruto, Impostos (%), Preço, Data de fabricação, Data de validade, Cor, Material, Quantidade em estoque\n\n" + products);
     }
-    //TODO dar continuidade ao writeNewCSVFile (traduzir, ordenar)
+
     public void writeNewCSVFile(){
         try{
             Writer writer = Files.newBufferedWriter(Paths.get(Main.path));
