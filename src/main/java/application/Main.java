@@ -51,7 +51,7 @@ public class Main {
                                         path = JOptionPane.showInputDialog(null, "Insira o caminho e o nome do arquivoem que deseja salvar a sua lista de produtos (exemplo: 'C:\\Users\\nome\\arquivo.csv'):", "Adicionar Produto", JOptionPane.QUESTION_MESSAGE);
                                     }
 
-                                    ps.addProduct(nameTXT.getText(), new BigDecimal(priceTXT.getText()), quantityTXT.getText(), categoryTXT.getText());
+                                    ps.addProduct(nameTXT.getText(), new BigDecimal(priceTXT.getText()), Integer.parseInt(quantityTXT.getText()), categoryTXT.getText());
 
                                     JOptionPane.showMessageDialog(null,"Produto cadastrado com sucesso!","Cadastro de produto", JOptionPane.INFORMATION_MESSAGE,checkMarkIcon);
                                     break;

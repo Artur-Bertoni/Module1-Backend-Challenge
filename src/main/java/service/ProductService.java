@@ -14,7 +14,7 @@ import java.lang.Math;
 
 public class ProductService extends Product {
 
-    public void addProduct(String name, BigDecimal price, String quantity, String category){
+    public void addProduct(String name, BigDecimal price, Integer quantity, String category){
         try{
             Product p = new Product();
             Utils u = new Utils();
@@ -22,7 +22,7 @@ public class ProductService extends Product {
             p.setName(name);
             p.setPrice(price);
             p.setCategory(category.toUpperCase());
-            p.setQuantity(Integer.parseInt(quantity));
+            p.setQuantity(quantity);
 
             String code;
             long barCode;
@@ -98,12 +98,13 @@ public class ProductService extends Product {
                 BigDecimal price = grossAmount.add((taxes.divide(BigDecimal.valueOf(100))).multiply(grossAmount));
                 price = price.add(price.multiply(BigDecimal.valueOf(0.45)));
                 Date manufacturingDate = null, expirationDate = null;
+                Integer quantity = Integer.parseInt(cols.get("quantidade"));
 
                 try {
-                    if (!cols.get("data de fabricação").equals("n/a")){
+                    if (!cols.get("data de fabricação").equals("n/a") && !cols.get("data de fabricação").equals("") && cols.get("data de fabricação") != null){
                         manufacturingDate = sdf.parse(cols.get("data de fabricação"));
                     }
-                    if (!cols.get("data de validade").equals("n/a")){
+                    if (!cols.get("data de validade").equals("n/a") && !cols.get("data de validade").equals("") && cols.get("data de validade") != null){
                         expirationDate = sdf.parse(cols.get("data de validade"));
                     }
                 } catch (ParseException e) {
@@ -128,11 +129,13 @@ public class ProductService extends Product {
                 p.setExpirationDate(expirationDate);
                 p.setColor(color);
                 p.setMaterial(material);
-                p.setQuantity(0);
+                p.setQuantity(quantity);
 
                 productList.add(p);
                 cont[0]++;
             });
+            Utils u = new Utils();
+            u.writeNewCSVFile();
         } catch(Exception e){
             throw new ProductServiceException(e.getMessage());
         }
@@ -146,10 +149,16 @@ public class ProductService extends Product {
             if (series != null) productList.get(position).setSeries(series);
             if (name != null) productList.get(position).setName(name);
             if (description != null) productList.get(position).setDescription(description);
-            if (category != null) productList.get(position).setCategory(category);
+            if (category != null) productList.get(position).setCategory(category.toUpperCase());
             if (grossAmount != null) productList.get(position).setGrossAmount(grossAmount);
             if (taxes != null) productList.get(position).setTaxes(taxes);
             if (price != null) productList.get(position).setPrice(price);
+            else {
+                assert grossAmount != null && taxes != null;
+                price = grossAmount.add((taxes.divide(BigDecimal.valueOf(100))).multiply(grossAmount));
+                price = price.add(price.multiply(BigDecimal.valueOf(0.45)));
+                productList.get(position).setPrice(price);
+            }
             if (manufacturingDate != null) productList.get(position).setManufacturingDate(manufacturingDate);
             if (expirationDate != null) productList.get(position).setExpirationDate(expirationDate);
             if (color != null) productList.get(position).setColor(color);
