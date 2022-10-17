@@ -26,7 +26,6 @@ public class Main {
 
             int option = JOptionPane.showOptionDialog(null, "Escolha uma opção:", "Bem-vindo(a)!", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, initialOptions, initialOptions[0]);
 
-            Product p = new Product();
             ProductService ps = new ProductService();
             Utils u = new Utils();
 
@@ -86,7 +85,7 @@ public class Main {
 
                                                 if (position != -1){
                                                     JTextField barCodeTXT                    = new JTextField();                    barCodeTXT.setText(Product.productList.get(position).getBarCode().toString());
-                                                    JFormattedTextField seriesTXT            = new JFormattedTextField();           seriesTXT.setText(Product.productList.get(position).getSeries());
+                                                    JFormattedTextField seriesTXT            = new JFormattedTextField(seriesMask); seriesTXT.setText(Product.productList.get(position).getSeries());
                                                     JTextField nameTXT                       = new JTextField();                    nameTXT.setText(Product.productList.get(position).getName());
                                                     JTextField descriptionTXT                = new JTextField();                    descriptionTXT.setText(Product.productList.get(position).getDescription());
                                                     JTextField categoryTXT                   = new JTextField();                    categoryTXT.setText(Product.productList.get(position).getCategory());
@@ -99,7 +98,7 @@ public class Main {
                                                     JTextField materialTXT                   = new JTextField();                    materialTXT.setText(Product.productList.get(position).getMaterial());
                                                     JTextField quantityTXT                   = new JTextField();                    quantityTXT.setText(String.valueOf(Product.productList.get(position).getQuantity()));
 
-                                                    Object[] editProduct = {"Dados do produto "+p.getCode()+":\n\nCódigo de barras:", barCodeTXT, "Série:", seriesTXT, "Nome:", nameTXT, "Descrição:", descriptionTXT,
+                                                    Object[] editProduct = {"Dados do produto "+Product.productList.get(position).getCode()+":\n\nCódigo de barras:", barCodeTXT, "Série:", seriesTXT, "Nome:", nameTXT, "Descrição:", descriptionTXT,
                                                             "Categoria:", categoryTXT, "Valor bruto:", grossAmountTXT, "Impostos (%):", taxesTXT, "Valor líquido:", priceTXT, "Data de fabricação:", manufacturingDateTXT, "Data de validade:", expirationDateTXT, "Quantidade:", quantityTXT};
 
                                                     do{
@@ -109,13 +108,18 @@ public class Main {
                                                             if (option == JOptionPane.OK_OPTION){
                                                                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-                                                                if (expirationDateTXT.getText().equals("  /  /    ")) {
-                                                                    expirationDateTXT.setText(sdf.format(new Date()));
+                                                                Date expirationDate = null, manufacturingDate = null;
+
+                                                                if (!expirationDateTXT.getText().equals("  /  /    ")) {
+                                                                    expirationDate = sdf.parse(expirationDateTXT.getText());
+                                                                }
+                                                                if (!manufacturingDateTXT.getText().equals("  /  /    ")) {
+                                                                    manufacturingDate = sdf.parse(manufacturingDateTXT.getText());
                                                                 }
 
                                                                 ps.editProduct(Long.parseLong(barCodeTXT.getText()), seriesTXT.getText(), nameTXT.getText(), descriptionTXT.getText(), categoryTXT.getText(),
                                                                         BigDecimal.valueOf(Double.parseDouble(grossAmountTXT.getText().replace(',','.'))),BigDecimal.valueOf(Double.parseDouble(taxesTXT.getText().replace(',','.'))),
-                                                                        BigDecimal.valueOf(Double.parseDouble(priceTXT.getText().replace(',','.'))), sdf.parse(manufacturingDateTXT.getText()), sdf.parse(expirationDateTXT.getText()), colorTXT.getText(), materialTXT.getText(),
+                                                                        BigDecimal.valueOf(Double.parseDouble(priceTXT.getText().replace(',','.'))), manufacturingDate, expirationDate, colorTXT.getText(), materialTXT.getText(),
                                                                         quantityTXT.getText(), position);
 
                                                                 JOptionPane.showMessageDialog(null,"Edição efetuada com sucesso!","Editar Dados Cadastrais do Produto", JOptionPane.INFORMATION_MESSAGE,icon);
@@ -279,9 +283,9 @@ public class Main {
                                 ps.addProductByImport(path);
 
                                 JOptionPane.showMessageDialog(null,"Produtos importados com sucesso!\nLista de novos produtos:\n\n"+u.listProductBuilder(),"Importar Produto", JOptionPane.INFORMATION_MESSAGE,icon);
-                                break;
                             }
-                        } catch (ProductServiceException e){
+                            break;
+                        } catch (Exception e){
                             JOptionPane.showMessageDialog(null,"Erro: "+e.getMessage(),"Importar Produto", JOptionPane.ERROR_MESSAGE);
                         }
                     } while(true);

@@ -14,14 +14,14 @@ import java.lang.Math;
 
 public class ProductService extends Product {
 
-    public void addProduct(String name, BigDecimal price, String quantity, String category){ //TODO setar campos vazios/ñ informados como nulos no banco
+    public void addProduct(String name, BigDecimal price, String quantity, String category){
         try{
             Product p = new Product();
             Utils u = new Utils();
 
             p.setName(name);
             p.setPrice(price);
-            p.setCategory(category);
+            p.setCategory(category.toUpperCase());
             p.setQuantity(Integer.parseInt(quantity));
 
             String code;
@@ -113,29 +113,25 @@ public class ProductService extends Product {
                 String color = cols.get("cor");
                 String material = cols.get("material");
 
-                try{
-                    Product p = new Product();
+                Product p = new Product();
 
-                    p.setCode(code);
-                    p.setBarCode(barCode);
-                    p.setSeries(series);
-                    p.setName(name);
-                    p.setDescription(description);
-                    p.setCategory(category);
-                    p.setGrossAmount(grossAmount);
-                    p.setTaxes(taxes);
-                    p.setPrice(price);
-                    p.setManufacturingDate(manufacturingDate);
-                    p.setExpirationDate(expirationDate);
-                    p.setColor(color);
-                    p.setMaterial(material);
-                    p.setQuantity(0);
+                p.setCode(code);
+                p.setBarCode(barCode);
+                p.setSeries(series);
+                p.setName(name);
+                p.setDescription(description);
+                p.setCategory(category);
+                p.setGrossAmount(grossAmount);
+                p.setTaxes(taxes);
+                p.setPrice(price);
+                p.setManufacturingDate(manufacturingDate);
+                p.setExpirationDate(expirationDate);
+                p.setColor(color);
+                p.setMaterial(material);
+                p.setQuantity(0);
 
-                    productList.add(p);
-                    cont[0]++;
-                } catch (Exception e){
-                    throw new ProductServiceException(e.getMessage());
-                }
+                productList.add(p);
+                cont[0]++;
             });
         } catch(Exception e){
             throw new ProductServiceException(e.getMessage());
