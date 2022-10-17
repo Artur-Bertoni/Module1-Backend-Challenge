@@ -16,9 +16,10 @@ import java.util.*;
 public class Main {
     public static String path = null;
     public static void main(String[] args) throws ParseException {
-        ImageIcon icon = new ImageIcon("images/checkmark.png");
-        MaskFormatter dateMask = new MaskFormatter("##/##/####");
-        MaskFormatter seriesMask = new MaskFormatter("#/####");
+        ImageIcon checkMarkIcon   = new ImageIcon("images/checkmark.png");
+        MaskFormatter dateMask    = new MaskFormatter("##/##/####");
+        MaskFormatter seriesMask  = new MaskFormatter("#/####");
+        MaskFormatter barCodeMask = new MaskFormatter("############");
 
         APP:
         do{
@@ -52,7 +53,7 @@ public class Main {
 
                                     ps.addProduct(nameTXT.getText(), new BigDecimal(priceTXT.getText()), quantityTXT.getText(), categoryTXT.getText());
 
-                                    JOptionPane.showMessageDialog(null,"Produto cadastrado com sucesso!","Cadastro de produto", JOptionPane.INFORMATION_MESSAGE,icon);
+                                    JOptionPane.showMessageDialog(null,"Produto cadastrado com sucesso!","Cadastro de produto", JOptionPane.INFORMATION_MESSAGE,checkMarkIcon);
                                     break;
                                 } else{
                                     throw new InputMismatchException("O valor referente à quantidade não pode ser negativo");
@@ -84,19 +85,19 @@ public class Main {
                                                 int position = ps.verifyExistingProduct(code);
 
                                                 if (position != -1){
-                                                    JTextField barCodeTXT                    = new JTextField();                    barCodeTXT.setText(Product.productList.get(position).getBarCode().toString());
-                                                    JFormattedTextField seriesTXT            = new JFormattedTextField(seriesMask); seriesTXT.setText(Product.productList.get(position).getSeries());
-                                                    JTextField nameTXT                       = new JTextField();                    nameTXT.setText(Product.productList.get(position).getName());
-                                                    JTextField descriptionTXT                = new JTextField();                    descriptionTXT.setText(Product.productList.get(position).getDescription());
-                                                    JTextField categoryTXT                   = new JTextField();                    categoryTXT.setText(Product.productList.get(position).getCategory());
-                                                    JTextField grossAmountTXT                = new JTextField();                    grossAmountTXT.setText(String.format("%.2f", Product.productList.get(position).getGrossAmount()));
-                                                    JTextField taxesTXT                      = new JTextField();                    taxesTXT.setText(String.format("%.2f", Product.productList.get(position).getTaxes()));
-                                                    JTextField priceTXT                      = new JTextField();                    priceTXT.setText(String.format("%.2f", Product.productList.get(position).getPrice()));
-                                                    JFormattedTextField manufacturingDateTXT = new JFormattedTextField(dateMask);   manufacturingDateTXT.setText(Product.productList.get(position).getManufacturingDate());
-                                                    JFormattedTextField expirationDateTXT    = new JFormattedTextField(dateMask);   expirationDateTXT.setText(Product.productList.get(position).getExpirationDate());
-                                                    JTextField colorTXT                      = new JTextField();                    colorTXT.setText(Product.productList.get(position).getColor());
-                                                    JTextField materialTXT                   = new JTextField();                    materialTXT.setText(Product.productList.get(position).getMaterial());
-                                                    JTextField quantityTXT                   = new JTextField();                    quantityTXT.setText(String.valueOf(Product.productList.get(position).getQuantity()));
+                                                    JFormattedTextField barCodeTXT           = new JFormattedTextField(barCodeMask);  barCodeTXT.setText(Product.productList.get(position).getBarCode().toString());
+                                                    JFormattedTextField seriesTXT            = new JFormattedTextField(seriesMask);   seriesTXT.setText(Product.productList.get(position).getSeries());
+                                                    JTextField nameTXT                       = new JTextField();                      nameTXT.setText(Product.productList.get(position).getName());
+                                                    JTextField descriptionTXT                = new JTextField();                      descriptionTXT.setText(Product.productList.get(position).getDescription());
+                                                    JTextField categoryTXT                   = new JTextField();                      categoryTXT.setText(Product.productList.get(position).getCategory());
+                                                    JTextField grossAmountTXT                = new JTextField();                      grossAmountTXT.setText(String.format("%.2f", Product.productList.get(position).getGrossAmount()));
+                                                    JTextField taxesTXT                      = new JTextField();                      taxesTXT.setText(String.format("%.2f", Product.productList.get(position).getTaxes()));
+                                                    JTextField priceTXT                      = new JTextField();                      priceTXT.setText(String.format("%.2f", Product.productList.get(position).getPrice()));
+                                                    JFormattedTextField manufacturingDateTXT = new JFormattedTextField(dateMask);     manufacturingDateTXT.setText(Product.productList.get(position).getManufacturingDate());
+                                                    JFormattedTextField expirationDateTXT    = new JFormattedTextField(dateMask);     expirationDateTXT.setText(Product.productList.get(position).getExpirationDate());
+                                                    JTextField colorTXT                      = new JTextField();                      colorTXT.setText(Product.productList.get(position).getColor());
+                                                    JTextField materialTXT                   = new JTextField();                      materialTXT.setText(Product.productList.get(position).getMaterial());
+                                                    JTextField quantityTXT                   = new JTextField();                      quantityTXT.setText(String.valueOf(Product.productList.get(position).getQuantity()));
 
                                                     Object[] editProduct = {"Dados do produto "+Product.productList.get(position).getCode()+":\n\nCódigo de barras:", barCodeTXT, "Série:", seriesTXT, "Nome:", nameTXT, "Descrição:", descriptionTXT,
                                                             "Categoria:", categoryTXT, "Valor bruto:", grossAmountTXT, "Impostos (%):", taxesTXT, "Valor líquido:", priceTXT, "Data de fabricação:", manufacturingDateTXT, "Data de validade:", expirationDateTXT, "Quantidade:", quantityTXT};
@@ -122,7 +123,7 @@ public class Main {
                                                                         BigDecimal.valueOf(Double.parseDouble(priceTXT.getText().replace(',','.'))), manufacturingDate, expirationDate, colorTXT.getText(), materialTXT.getText(),
                                                                         quantityTXT.getText(), position);
 
-                                                                JOptionPane.showMessageDialog(null,"Edição efetuada com sucesso!","Editar Dados Cadastrais do Produto", JOptionPane.INFORMATION_MESSAGE,icon);
+                                                                JOptionPane.showMessageDialog(null,"Edição efetuada com sucesso!","Editar Dados Cadastrais do Produto", JOptionPane.INFORMATION_MESSAGE,checkMarkIcon);
                                                                 break EDIT_PRODUCT;
                                                             } else{
                                                                 break;
@@ -163,7 +164,7 @@ public class Main {
                                                         } else if (Integer.parseInt(quantity) > 0) {
                                                             ps.addQuantity(position, Integer.parseInt(quantity));
 
-                                                            JOptionPane.showMessageDialog(null, "Edição efetuada com sucesso!", "Adicionar ao Estoque", JOptionPane.INFORMATION_MESSAGE, icon);
+                                                            JOptionPane.showMessageDialog(null, "Edição efetuada com sucesso!", "Adicionar ao Estoque", JOptionPane.INFORMATION_MESSAGE, checkMarkIcon);
                                                             break EDIT_PRODUCT;
                                                         } else {
                                                             throw new InputMismatchException("O valor referente à quantidade deve ser maior que zero");
@@ -203,7 +204,7 @@ public class Main {
                                                         } else if (Integer.parseInt(quantity) > 0) {
                                                             ps.removeQuantity(position, Integer.parseInt(quantity));
 
-                                                            JOptionPane.showMessageDialog(null, "Edição efetuada com sucesso!", "Remover do Estoque", JOptionPane.INFORMATION_MESSAGE, icon);
+                                                            JOptionPane.showMessageDialog(null, "Edição efetuada com sucesso!", "Remover do Estoque", JOptionPane.INFORMATION_MESSAGE, checkMarkIcon);
                                                             break EDIT_PRODUCT;
                                                         } else {
                                                             throw new InputMismatchException("O valor referente à quantidade deve ser maior que zero");
@@ -250,7 +251,7 @@ public class Main {
 
                                         if (option == JOptionPane.YES_OPTION){
                                             if (ps.removeProduct(position)){
-                                                JOptionPane.showMessageDialog(null,"Produto excluído!","Excluir Produto", JOptionPane.INFORMATION_MESSAGE,icon);
+                                                JOptionPane.showMessageDialog(null,"Produto excluído!","Excluir Produto", JOptionPane.INFORMATION_MESSAGE,checkMarkIcon);
                                                 break;
                                             }
                                         }
@@ -282,7 +283,7 @@ public class Main {
                                 }
                                 ps.addProductByImport(path);
 
-                                JOptionPane.showMessageDialog(null,"Produtos importados com sucesso!\nLista de novos produtos:\n\n"+u.listProductBuilder(),"Importar Produto", JOptionPane.INFORMATION_MESSAGE,icon);
+                                JOptionPane.showMessageDialog(null,"Produtos importados com sucesso!\nLista de novos produtos:\n\n"+u.listProductBuilder(),"Importar Produto", JOptionPane.INFORMATION_MESSAGE,checkMarkIcon);
                             }
                             break;
                         } catch (Exception e){
