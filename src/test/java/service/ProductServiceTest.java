@@ -67,8 +67,6 @@ public class ProductServiceTest {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
         Main.path = "src/test/java/test.csv";
-        ps.addProductByImport("src/test/java/pattern.csv");
-
         long barCode = 913387200000L;
         String series = "2/2022";
         String name = "Maçã";
@@ -85,6 +83,7 @@ public class ProductServiceTest {
         int position = 0;
 
         //ação
+        ps.addProductByImport("src/test/java/pattern.csv");
         ps.editProduct(barCode, series, name, description, category, grossAmount, taxes, price, manufacturingDate, expirationDate, color, material, quantity, position);
 
         //verificação
@@ -102,5 +101,71 @@ public class ProductServiceTest {
         Assert.assertEquals("vermelho",Product.productList.get(0).getColor());
         Assert.assertEquals("n/a",Product.productList.get(0).getMaterial());
         Assert.assertEquals(200,(int) Product.productList.get(0).getQuantity());
+    }
+
+    @Test
+    public void removeProductTest(){
+        //cenário
+        ProductService ps = new ProductService();
+
+        Main.path = "src/test/java/test.csv";
+        int position = 0;
+
+        //ação
+        ps.addProductByImport("src/test/java/pattern.csv");
+        ps.removeProduct(position);
+
+        //verificação
+        Assert.assertEquals(0,Product.productList.size());
+    }
+
+    @Test
+    public void addQuantityTest(){
+        //cenário
+        ProductService ps = new ProductService();
+
+        Main.path = "src/test/java/test.csv";
+        int position = 0;
+        int quantityToBeAdded = 50;
+
+        //ação
+        ps.addProductByImport("src/test/java/pattern.csv");
+        ps.addQuantity(position,quantityToBeAdded);
+
+        //verificação
+        Assert.assertEquals(200, (int) Product.productList.get(position).getQuantity());
+    }
+
+    @Test
+    public void removeQuantityTest(){
+        //cenário
+        ProductService ps = new ProductService();
+
+        Main.path = "src/test/java/test.csv";
+        int position = 0;
+        int quantityToBeRemoved = 50;
+
+        //ação
+        ps.addProductByImport("src/test/java/pattern.csv");
+        ps.removeQuantity(position,quantityToBeRemoved);
+
+        //verificação
+        Assert.assertEquals(100, (int) Product.productList.get(position).getQuantity());
+    }
+
+    @Test
+    public void verifyExistingProductTest(){
+        //cenário
+        ProductService ps = new ProductService();
+
+        Main.path = "src/test/java/test.csv";
+        String code = "2tve3sxb";
+
+        //ação
+        ps.addProductByImport("src/test/java/pattern.csv");
+        int position = ps.verifyExistingProduct(code);
+
+        //verificação
+        Assert.assertEquals(0,position);
     }
 }
