@@ -2,10 +2,12 @@ package service;
 
 import Utilities.Utils;
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 import entities.Product;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -60,7 +62,7 @@ public class ProductService extends Product {
         }
     }
 
-    public void addProductByImport(String path){
+    public void addProductByImport(String path) {
         try{
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             CSVReader csvReader = new CSVReader(new FileReader(path));
@@ -74,7 +76,12 @@ public class ProductService extends Product {
                 headers[i] = headers[i].toLowerCase();
             }
 
-            while ((columns = csvReader.readNext()) != null){
+            while (true){
+                try {
+                    if ((columns = csvReader.readNext()) == null) break;
+                } catch (IOException | CsvValidationException e) {
+                    throw new RuntimeException(e);
+                }
                 Map<String,String> campos = new HashMap<>();
 
                 for (int i=0; i< columns.length; i++){
@@ -88,17 +95,20 @@ public class ProductService extends Product {
 
             lines.forEach(cols -> {
                 String code = cols.get("código");
-                Long barCode = Long.parseLong(cols.get("codigo de barras"));
+                Long barCode = cols.get("codigo de barras").equals("null") ? null : Long.parseLong(cols.get("código de barras"));
                 String series = cols.get("série");
                 String name = cols.get("nome");
                 String description = cols.get("descrição");
                 String category = cols.get("categoria");
-                BigDecimal taxes = new BigDecimal(cols.get("impostos (%)").replace(',','.'));
-                BigDecimal grossAmount = new BigDecimal(cols.get("valor bruto").replace(',','.'));
-                BigDecimal price = grossAmount.add((taxes.divide(BigDecimal.valueOf(100))).multiply(grossAmount));
-                price = price.add(price.multiply(BigDecimal.valueOf(0.45)));
+                BigDecimal taxes = cols.get("impostos (%)").equals("null") ? null : new BigDecimal(cols.get("impostos (%)").replace(',','.'));
+                BigDecimal grossAmount = cols.get("valor bruto").equals("null") ? null : new BigDecimal(cols.get("valor bruto").replace(',','.'));
+                BigDecimal price = null;
+                if (taxes != null && grossAmount != null){
+                    price = grossAmount.add((taxes.divide(BigDecimal.valueOf(100))).multiply(grossAmount));
+                    price = price.add(price.multiply(BigDecimal.valueOf(0.45)));
+                }
                 Date manufacturingDate = null, expirationDate = null;
-                Integer quantity = Integer.parseInt(cols.get("quantidade"));
+                Integer quantity = (cols.get("quantidade") == null || cols.get("quantidade").equals("null")) ? null : Integer.parseInt(cols.get("quantidade"));
 
                 try {
                     if (!cols.get("data de fabricação").equals("n/a") && !cols.get("data de fabricação").equals("") && cols.get("data de fabricação") != null){
