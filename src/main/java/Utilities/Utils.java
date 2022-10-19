@@ -1,19 +1,13 @@
 package Utilities;
 
-import Utilities.CsvWriter.HeaderColumnNameAndOrderMappingStrategy;
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import application.Main;
 import service.ProductServiceException;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import application.Main;
 import entities.Product;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Utils {
 
@@ -29,20 +23,17 @@ public class Utils {
     }
 
     public void writeNewCSVFile(){
-        try{
-            Writer writer = Files.newBufferedWriter(Paths.get(Main.path));
-            StatefulBeanToCsv<Product> csvWriter = new StatefulBeanToCsvBuilder<Product>(writer)
-                    .withApplyQuotesToAll(false)
-                    .withMappingStrategy(new HeaderColumnNameAndOrderMappingStrategy<>(Product.class))
-                    .withQuotechar('"')
-                    .withEscapechar('"')
-                    .build();
-            csvWriter.write(Product.productList);
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(Main.path))){
+            bw.write("código,codigo de barras,série,nome,descrição,categoria,valor bruto,impostos (%),valor líquido,data de fabricação,data de validade,cor,material,quantidade");
+            bw.newLine();
 
+            Product p = new Product();
 
-            writer.flush();
-            writer.close();
-        } catch (IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e){
+            for (int i = 0; i<Product.productList.size(); i++) {
+                bw.write(p.toString(i));
+                bw.newLine();
+            }
+        } catch (IOException e) {
             throw new ProductServiceException(e.getMessage());
         }
     }

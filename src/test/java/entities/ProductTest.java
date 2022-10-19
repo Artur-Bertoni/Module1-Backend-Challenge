@@ -21,6 +21,6 @@ public class ProductTest {
         String result = p.toString(position);
 
         //verificação
-        Assert.assertEquals("2tve3sxb, 913387273046, 1/2022, Banana, 'Fruta amarela', FRUTA, '1.5, 150, 5.4375', 17/10/2022, 15/11/2022, n/a, n/a, 150",result);
+        Assert.assertEquals("2tve3sxb,913387273046,1/2022,Banana,\"Fruta amarela\",FRUTA,\"1.5\",\"150\",\"5.4375\",17/10/2022,15/11/2022,n/a,n/a,150",result);
     }
 }

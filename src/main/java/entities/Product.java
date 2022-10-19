@@ -1,7 +1,5 @@
 package entities;
 
-import Utilities.CsvWriter.CsvBindByNameOrder;
-import com.opencsv.bean.CsvBindByName;
 import service.ProductServiceException;
 
 import java.math.BigDecimal;
@@ -10,23 +8,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@CsvBindByNameOrder({"código","codigo de barras","série","nome","descrição","categoria","valor bruto","impostos (%)","valor líquido","data de fabricação","data de validade","cor","material","quantidade"})
 public class Product {
 
-    @CsvBindByName(column = "código") private String code;
-    @CsvBindByName(column = "categoria") private String category;
-    @CsvBindByName(column = "série") private String series;
-    @CsvBindByName(column = "descrição") private String description;
-    @CsvBindByName(column = "cor") private String color;
-    @CsvBindByName(column = "material") private String material;
-    @CsvBindByName(column = "nome") private String name;
-    @CsvBindByName(column = "valor bruto") private BigDecimal grossAmount;
-    @CsvBindByName(column = "impostos (%)") private BigDecimal taxes;
-    @CsvBindByName(column = "valor líquido") private BigDecimal price;
-    @CsvBindByName(column = "quantidade") private Integer quantity;
-    @CsvBindByName(column = "codigo de barras") private Long barCode;
-    @CsvBindByName(column = "data de fabricação") private Date manufacturingDate;
-    @CsvBindByName(column = "data de validade") private Date expirationDate;
+    private String code, category, series, description, color, material, name;
+    private BigDecimal grossAmount, taxes, price;
+    private Integer quantity;
+    private Long barCode;
+    private Date manufacturingDate, expirationDate;
 
     public static List<Product> productList = new ArrayList<>();
 
@@ -149,13 +137,16 @@ public class Product {
 
     public String toString(int i) {
         try{
-            return  productList.get(i).getCode() + ", " + productList.get(i).getBarCode() + ", " + productList.get(i).getSeries() + ", " + productList.get(i).getName() + ", '" +
-                    productList.get(i).getDescription() + "', " + productList.get(i).getCategory() + ", '" + productList.get(i).getGrossAmount() + ", " +
-                    productList.get(i).getTaxes() + ", " + productList.get(i).getPrice() + "', " +
-                    productList.get(i).getManufacturingDate() + ", " + productList.get(i).getExpirationDate() + ", " + productList.get(i).getColor() + ", " +
-                    productList.get(i).getMaterial() + ", " + productList.get(i).getQuantity();
+            return  productList.get(i).getCode() + ","            + productList.get(i).getBarCode() + "," +
+                    productList.get(i).getSeries() + ","          + productList.get(i).getName() + ",\"" +
+                    productList.get(i).getDescription() + "\","   + productList.get(i).getCategory() + ",\"" +
+                    productList.get(i).getGrossAmount() + "\",\"" + productList.get(i).getTaxes() + "\",\"" +
+                    productList.get(i).getPrice() + "\","         + productList.get(i).getManufacturingDate() + "," +
+                    productList.get(i).getExpirationDate() + ","  + productList.get(i).getColor() + "," +
+                    productList.get(i).getMaterial() + ","        + productList.get(i).getQuantity();
         } catch (Exception e){
-            throw new ProductServiceException("Retornar lista de produtos");
+            throw new ProductServiceException(e.getMessage());
+            //throw new ProductServiceException("Retornar lista de produtos");
         }
     }
 }

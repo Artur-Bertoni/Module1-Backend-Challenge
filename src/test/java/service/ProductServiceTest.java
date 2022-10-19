@@ -25,12 +25,13 @@ public class ProductServiceTest {
 
         //ação
         ps.addProduct(name, price, quantity, category);
+        int position = Product.productList.size() - 1;
 
         //verificação
-        Assert.assertEquals("Banana", Product.productList.get(0).getName());
-        Assert.assertEquals(BigDecimal.valueOf(5.00), Product.productList.get(0).getPrice());
-        Assert.assertEquals(150, (int) Product.productList.get(0).getQuantity());
-        Assert.assertEquals("FRUTA",Product.productList.get(0).getCategory());
+        Assert.assertEquals("Banana", Product.productList.get(position).getName());
+        Assert.assertEquals(5.0, Product.productList.get(position).getPrice().doubleValue(), 0.01);
+        Assert.assertEquals(150, (int) Product.productList.get(position).getQuantity());
+        Assert.assertEquals("FRUTA",Product.productList.get(position).getCategory());
     }
 
     @Test
@@ -42,22 +43,23 @@ public class ProductServiceTest {
 
         //ação
         ps.addProductByImport("src/test/java/pattern.csv");
+        int position = Product.productList.size() - 1;
 
         //verificação
-        Assert.assertEquals("2tve3sxb",Product.productList.get(0).getCode());
-        Assert.assertEquals(913387273046L,(long) Product.productList.get(0).getBarCode());
-        Assert.assertEquals("1/2022",Product.productList.get(0).getSeries());
-        Assert.assertEquals("Banana",Product.productList.get(0).getName());
-        Assert.assertEquals("Fruta amarela",Product.productList.get(0).getDescription());
-        Assert.assertEquals("FRUTA",Product.productList.get(0).getCategory());
-        Assert.assertEquals(1.50,Product.productList.get(0).getGrossAmount().doubleValue(), 0.01);
-        Assert.assertEquals(150,Product.productList.get(0).getTaxes().intValue());
-        Assert.assertEquals(5.43, Product.productList.get(0).getPrice().doubleValue(), 0.01);
-        Assert.assertEquals("17/10/2022",Product.productList.get(0).getManufacturingDate());
-        Assert.assertEquals("15/11/2022",Product.productList.get(0).getExpirationDate());
-        Assert.assertEquals("n/a",Product.productList.get(0).getColor());
-        Assert.assertEquals("n/a",Product.productList.get(0).getMaterial());
-        Assert.assertEquals(150,(int) Product.productList.get(0).getQuantity());
+        Assert.assertEquals("2tve3sxb", Product.productList.get(position).getCode());
+        Assert.assertEquals(913387273046L, (long) Product.productList.get(position).getBarCode());
+        Assert.assertEquals("1/2022", Product.productList.get(position).getSeries());
+        Assert.assertEquals("Banana", Product.productList.get(position).getName());
+        Assert.assertEquals("Fruta amarela", Product.productList.get(position).getDescription());
+        Assert.assertEquals("FRUTA", Product.productList.get(position).getCategory());
+        Assert.assertEquals(1.50, Product.productList.get(position).getGrossAmount().doubleValue(), 0.01);
+        Assert.assertEquals(150, Product.productList.get(position).getTaxes().intValue());
+        Assert.assertEquals(5.43, Product.productList.get(position).getPrice().doubleValue(), 0.01);
+        Assert.assertEquals("17/10/2022", Product.productList.get(position).getManufacturingDate());
+        Assert.assertEquals("15/11/2022", Product.productList.get(position).getExpirationDate());
+        Assert.assertEquals("n/a", Product.productList.get(position).getColor());
+        Assert.assertEquals("n/a", Product.productList.get(position).getMaterial());
+        Assert.assertEquals(150, (int) Product.productList.get(position).getQuantity());
     }
 
     @Test
@@ -87,20 +89,20 @@ public class ProductServiceTest {
         ps.editProduct(barCode, series, name, description, category, grossAmount, taxes, price, manufacturingDate, expirationDate, color, material, quantity, position);
 
         //verificação
-        Assert.assertEquals("2tve3sxb",Product.productList.get(0).getCode());
-        Assert.assertEquals(913387200000L,(long) Product.productList.get(0).getBarCode());
-        Assert.assertEquals("2/2022",Product.productList.get(0).getSeries());
-        Assert.assertEquals("Maçã",Product.productList.get(0).getName());
-        Assert.assertEquals("Fruta vermelha",Product.productList.get(0).getDescription());
-        Assert.assertEquals("FRUTA",Product.productList.get(0).getCategory());
-        Assert.assertEquals(2.50,Product.productList.get(0).getGrossAmount().doubleValue(), 0.01);
-        Assert.assertEquals(100,Product.productList.get(0).getTaxes().intValue());
-        Assert.assertEquals(7.25, Product.productList.get(0).getPrice().doubleValue(), 0.01);
-        Assert.assertEquals("27/10/2022",Product.productList.get(0).getManufacturingDate());
-        Assert.assertEquals("25/11/2022",Product.productList.get(0).getExpirationDate());
-        Assert.assertEquals("vermelho",Product.productList.get(0).getColor());
-        Assert.assertEquals("n/a",Product.productList.get(0).getMaterial());
-        Assert.assertEquals(200,(int) Product.productList.get(0).getQuantity());
+        Assert.assertEquals("2tve3sxb",Product.productList.get(position).getCode());
+        Assert.assertEquals(913387200000L,(long) Product.productList.get(position).getBarCode());
+        Assert.assertEquals("2/2022",Product.productList.get(position).getSeries());
+        Assert.assertEquals("Maçã",Product.productList.get(position).getName());
+        Assert.assertEquals("Fruta vermelha",Product.productList.get(position).getDescription());
+        Assert.assertEquals("FRUTA",Product.productList.get(position).getCategory());
+        Assert.assertEquals(2.50,Product.productList.get(position).getGrossAmount().doubleValue(), 0.01);
+        Assert.assertEquals(100,Product.productList.get(position).getTaxes().intValue());
+        Assert.assertEquals(7.25, Product.productList.get(position).getPrice().doubleValue(), 0.01);
+        Assert.assertEquals("27/10/2022",Product.productList.get(position).getManufacturingDate());
+        Assert.assertEquals("25/11/2022",Product.productList.get(position).getExpirationDate());
+        Assert.assertEquals("vermelho",Product.productList.get(position).getColor());
+        Assert.assertEquals("n/a",Product.productList.get(position).getMaterial());
+        Assert.assertEquals(200,(int) Product.productList.get(position).getQuantity());
     }
 
     @Test
@@ -113,10 +115,12 @@ public class ProductServiceTest {
 
         //ação
         ps.addProductByImport("src/test/java/pattern.csv");
+        int tamInicial = Product.productList.size();
         ps.removeProduct(position);
+        int tamFinal = tamInicial - 1;
 
         //verificação
-        Assert.assertEquals(0,Product.productList.size());
+        Assert.assertEquals(tamFinal,Product.productList.size());
     }
 
     @Test
@@ -142,7 +146,7 @@ public class ProductServiceTest {
         ProductService ps = new ProductService();
 
         Main.path = "src/test/java/test.csv";
-        int position = 0;
+        int position = Product.productList.size();
         int quantityToBeRemoved = 50;
 
         //ação
