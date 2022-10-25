@@ -95,7 +95,7 @@ public class ProductService extends Product {
 
             lines.forEach(cols -> {
                 String code = cols.get("código");
-                Long barCode = cols.get("codigo de barras").equals("null") ? null : Long.parseLong(cols.get("código de barras"));
+                Long barCode = cols.get("codigo de barras").equals("null") ? null : Long.parseLong(cols.get("codigo de barras"));
                 String series = cols.get("série");
                 String name = cols.get("nome");
                 String description = cols.get("descrição");
@@ -111,10 +111,10 @@ public class ProductService extends Product {
                 Integer quantity = (cols.get("quantidade") == null || cols.get("quantidade").equals("null")) ? null : Integer.parseInt(cols.get("quantidade"));
 
                 try {
-                    if (!cols.get("data de fabricação").equals("n/a") && !cols.get("data de fabricação").equals("") && cols.get("data de fabricação") != null){
+                    if (!cols.get("data de fabricação").equals("n/a") && !cols.get("data de fabricação").equals("") && !cols.get("data de fabricação").equals("null")){
                         manufacturingDate = sdf.parse(cols.get("data de fabricação"));
                     }
-                    if (!cols.get("data de validade").equals("n/a") && !cols.get("data de validade").equals("") && cols.get("data de validade") != null){
+                    if (!cols.get("data de validade").equals("n/a") && !cols.get("data de validade").equals("") && !cols.get("data de validade").equals("null")){
                         expirationDate = sdf.parse(cols.get("data de validade"));
                     }
                 } catch (ParseException e) {

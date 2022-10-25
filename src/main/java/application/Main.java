@@ -15,11 +15,18 @@ import java.util.*;
 
 public class Main {
     public static String path = null;
-    public static void main(String[] args) throws ParseException {
+
+    public static void main(String[] args) {
         ImageIcon checkMarkIcon   = new ImageIcon("images/checkmark.png");
-        MaskFormatter dateMask    = new MaskFormatter("##/##/####");
-        MaskFormatter seriesMask  = new MaskFormatter("#/####");
-        MaskFormatter barCodeMask = new MaskFormatter("############");
+        MaskFormatter dateMask, seriesMask, barCodeMask;
+
+        try{
+            dateMask = new MaskFormatter("##/##/####");
+            seriesMask  = new MaskFormatter("#/####");
+            barCodeMask = new MaskFormatter("############");
+        } catch (ParseException e) {
+            throw new ProductServiceException(e.getMessage());
+        }
 
         APP:
         do{
@@ -156,22 +163,28 @@ public class Main {
                                                 int position = ps.verifyExistingProduct(code);
 
                                                 if (position != -1) {
-                                                    String quantity = JOptionPane.showInputDialog(null, "Insira a quantidade a ser adicionada ao estoque:", "Adicionar ao Estoque", JOptionPane.QUESTION_MESSAGE);
+                                                    do{
+                                                        try{
+                                                            String quantity = JOptionPane.showInputDialog(null, "Insira a quantidade a ser adicionada ao estoque:", "Adicionar ao Estoque", JOptionPane.QUESTION_MESSAGE);
 
-                                                    if (quantity != null) {
-                                                        if (quantity.equals("")){
-                                                            throw new ProductServiceException("O campo deve ser preenchido");
-                                                        } else if (Integer.parseInt(quantity) > 0) {
-                                                            ps.addQuantity(position, Integer.parseInt(quantity));
+                                                            if (quantity != null) {
+                                                                if (quantity.equals("")){
+                                                                    throw new ProductServiceException("O campo deve ser preenchido");
+                                                                } else if (Integer.parseInt(quantity) > 0) {
+                                                                    ps.addQuantity(position, Integer.parseInt(quantity));
 
-                                                            JOptionPane.showMessageDialog(null, "Edição efetuada com sucesso!", "Adicionar ao Estoque", JOptionPane.INFORMATION_MESSAGE, checkMarkIcon);
-                                                            break EDIT_PRODUCT;
-                                                        } else {
-                                                            throw new InputMismatchException("O valor referente à quantidade deve ser maior que zero");
+                                                                    JOptionPane.showMessageDialog(null, "Edição efetuada com sucesso!", "Adicionar ao Estoque", JOptionPane.INFORMATION_MESSAGE, checkMarkIcon);
+                                                                    break EDIT_PRODUCT;
+                                                                } else {
+                                                                    throw new InputMismatchException("O valor referente à quantidade deve ser maior que zero");
+                                                                }
+                                                            } else{
+                                                                break;
+                                                            }
+                                                        } catch(Exception e){
+                                                            JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage(), "Adicionar ao Estoque", JOptionPane.ERROR_MESSAGE);
                                                         }
-                                                    } else{
-                                                        throw new InputMismatchException("O campo deve ser preenchido");
-                                                    }
+                                                    } while(true);
                                                 } else {
                                                     if (code.equals("")){
                                                         throw new ProductServiceException("O campo deve ser preenchido");
@@ -196,22 +209,28 @@ public class Main {
                                                 int position = ps.verifyExistingProduct(code);
 
                                                 if (position != -1) {
-                                                    String quantity = JOptionPane.showInputDialog(null, "Insira a quantidade a ser adicionada ao estoque:", "Remover do Estoque", JOptionPane.QUESTION_MESSAGE);
+                                                    do{
+                                                        try{
+                                                            String quantity = JOptionPane.showInputDialog(null, "Insira a quantidade a ser removida do estoque:", "Remover do Estoque", JOptionPane.QUESTION_MESSAGE);
 
-                                                    if (quantity != null) {
-                                                        if (quantity.equals("")){
-                                                            throw new ProductServiceException("O campo deve ser preenchido");
-                                                        } else if (Integer.parseInt(quantity) > 0) {
-                                                            ps.removeQuantity(position, Integer.parseInt(quantity));
+                                                            if (quantity != null) {
+                                                                if (quantity.equals("")){
+                                                                    throw new ProductServiceException("O campo deve ser preenchido");
+                                                                } else if (Integer.parseInt(quantity) > 0) {
+                                                                    ps.removeQuantity(position, Integer.parseInt(quantity));
 
-                                                            JOptionPane.showMessageDialog(null, "Edição efetuada com sucesso!", "Remover do Estoque", JOptionPane.INFORMATION_MESSAGE, checkMarkIcon);
-                                                            break EDIT_PRODUCT;
-                                                        } else {
-                                                            throw new InputMismatchException("O valor referente à quantidade deve ser maior que zero");
+                                                                    JOptionPane.showMessageDialog(null, "Edição efetuada com sucesso!", "Remover do Estoque", JOptionPane.INFORMATION_MESSAGE, checkMarkIcon);
+                                                                    break EDIT_PRODUCT;
+                                                                } else {
+                                                                    throw new InputMismatchException("O valor referente à quantidade deve ser maior que zero");
+                                                                }
+                                                            } else{
+                                                                break;
+                                                            }
+                                                        } catch(Exception e){
+                                                            JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage(), "Remover do Estoque", JOptionPane.ERROR_MESSAGE);
                                                         }
-                                                    } else{
-                                                        throw new InputMismatchException("O campo deve ser preenchido");
-                                                    }
+                                                    } while(true);
                                                 } else {
                                                     if (code.equals("")){
                                                         throw new ProductServiceException("O campo deve ser preenchido");
