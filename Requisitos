@@ -1,16 +1,16 @@
 Requisitos e Funcionalidades Esperadas
 
-[ ] Construir uma aplicação Java Standalone que execute por linha de comando.
-[ ] As funcionalidades deveráo ter cobertura de testes unitários.
-[ ] Ao iniciar a aplicação, exibir um menu numerado com as seguintes opções:
-    [ ] 1. Adicionar Novo Produto: Permitir incluir um novo item na lista de produtos da loja. Ao selecionar essa opção solicitar os seguintes dados para o usuário: nome, preço, quantidade em estoque e categoria.
-    [ ] 2. Editar Produto: Permitir editar os dados de um produto. Ao selecionar essa opção, deverá listar todos os produtos cadastrados e o usuário poderá selecionar um para edição dos dados previamente cadastrados.
-    [ ] 3. Excluir Produto: Listar todos os produtos cadastrados e permitir selecionar um para apagar. Deverá sempre haver pelo menos um produto na lista.
-    [ ] 4. Importar Mostruário da Fábrica: Muitas vezes, lojas virtuais recebem das fábricas arquivos com os dados dos produtos. Ao selecionar essa opção, a aplicação deverá ser um arquivo .csv (ver exemplo no repositório) que deve ser indicado pelo usuário, tratar os dados e gravar na lista de produtos.
-        [ ] Cálculo do valor final do produto: valor bruto + imposto + margem de lucro de 45%
-    [ ] 5. Sair: opção para o usuário encerrar o sistema.
-[ ] Qualquer manipulação dos dados deverá ser armazenado no arquivo CSV.
-[ ] Após o usuário efetuar alguma das operações acima (das opções de 1-4), a aplicação deverá voltar para o menu inicial.
-[ ] Cada opção do menu, deve ter uma opção de "Cancelar" a operação e voltar para o menu inicial, sem promover alteração dos dados.
-[ ] Não pode ser usado Lombok.
-[ ] Criar um README.md contendo as orientações para rodar a aplicação e suas dependências pela linha de comando.
+[ ] 1. Construir uma aplicação Java Standalone que execute por linha de comando.
+[ ] 2. As funcionalidades deveráo ter cobertura de testes unitários.
+[ ] 3. Ao iniciar a aplicação, exibir um menu numerado com as seguintes opções:
+    [ ] 3.1. Adicionar Novo Produto: Permitir incluir um novo item na lista de produtos da loja. Ao selecionar essa opção solicitar os seguintes dados para o usuário: nome, preço, quantidade em estoque e categoria.
+    [ ] 3.2. Editar Produto: Permitir editar os dados de um produto. Ao selecionar essa opção, deverá listar todos os produtos cadastrados e o usuário poderá selecionar um para edição dos dados previamente cadastrados.
+    [ ] 3.3. Excluir Produto: Listar todos os produtos cadastrados e permitir selecionar um para apagar. Deverá sempre haver pelo menos um produto na lista.
+    [ ] 3.4. Importar Mostruário da Fábrica: Muitas vezes, lojas virtuais recebem das fábricas arquivos com os dados dos produtos. Ao selecionar essa opção, a aplicação deverá ser um arquivo .csv (ver exemplo no repositório) que deve ser indicado pelo usuário, tratar os dados e gravar na lista de produtos.
+        [ ] 3.4.1. Cálculo do valor final do produto: valor bruto + imposto + margem de lucro de 45%
+    [ ] 3.5. Sair: opção para o usuário encerrar o sistema.
+[ ] 4. Qualquer manipulação dos dados deverá ser armazenado no arquivo CSV.
+[ ] 5. Após o usuário efetuar alguma das operações acima (das opções de 1-4), a aplicação deverá voltar para o menu inicial.
+[ ] 6. Cada opção do menu, deve ter uma opção de "Cancelar" a operação e voltar para o menu inicial, sem promover alteração dos dados.
+[ ] 7. Não pode ser usado Lombok.
+[ ] 8. Criar um README.md contendo as orientações para rodar a aplicação e suas dependências pela linha de comando.
